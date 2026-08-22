@@ -1,8 +1,5 @@
 # Kanishka Sarkar — Portfolio
 
-Rebuilt from the `Portfolio Rebuild.dc.html` Claude Design handoff into a real
-Next.js 15 (App Router) + TypeScript + Tailwind project.
-
 ## Getting started
 
 ```bash
