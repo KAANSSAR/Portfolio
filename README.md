@@ -10,9 +10,9 @@ Built with Next.js 15, TypeScript, Tailwind CSS, Three.js, Framer Motion, and GS
 
 This site showcases my work across three areas:
 
-- **Software engineering** — a production agentic AI system built during a TCS Garage internship (selected 1 of 30 from ~10,000 applicants), a cross-platform .NET MAUI system for Hanlon Industries, and CattleScanner, a computer-vision measurement tool (91.3% mAP@50) built for SOFT3888.
+- **Software engineering** — a production agentic AI system built during a TCS Garage internship, a cross-platform .NET MAUI system for Hanlon Industries, and CattleScanner, a computer-vision measurement tool (91.3% mAP@50) built for SOFT3888.
 - **Quantitative finance** — Stratum (an NSE500 market analytics engine), an Options Pricing Engine (Black-Scholes, Binomial Trees, Monte Carlo), and Cardinal, a Bloomberg-terminal-style equity research platform with a multi-agent AI analyst team.
-- **Research & writing** — long-form notes on tail risk, Hawkes process order flow, autodiff Greeks, and American put early-exercise boundaries, written up with LaTeX and interactive charts.
+- **Research & writing** — long-form notes on tail risk, Hawkes process order flow, autodiff Greeks, and American put early-exercise boundaries, (and more coming soon) written up with LaTeX and interactive charts.
 
 Full details, timeline, and case studies are on the site itself.
 
