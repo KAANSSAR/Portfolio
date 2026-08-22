@@ -1,63 +1,79 @@
-@tailwind base;
-@tailwind components;
-@tailwind utilities;
-
-@import url('https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,500;0,700;0,900;1,400;1,700&family=DM+Sans:opsz,wght@9..40,200;9..40,300;9..40,400;9..40,500&family=DM+Mono:wght@300;400&display=swap');
+@import "tailwindcss";
 
 :root {
-  --gold: #C4962A;
-  --gold-light: #E8C97A;
-  --ink-muted: #4A433A;
+  --reveal-x: 50%;
+  --reveal-y: 50%;
 }
 
 * {
   box-sizing: border-box;
-  margin: 0;
-  padding: 0;
 }
 
-html {
-  scroll-behavior: smooth;
+html,
+body {
+  padding: 0;
+  margin: 0;
 }
 
 body {
-  background: #F5F0E8;
-  color: #1A1612;
   font-family: 'DM Sans', sans-serif;
-  font-weight: 300;
+  font-weight: 500;
   overflow-x: hidden;
+}
+
+/* Custom canvas cursor only replaces the native one on devices with a real
+   pointer — on touch devices the native cursor (i.e. no cursor) stays put. */
+html.has-fine-pointer,
+html.has-fine-pointer body,
+html.has-fine-pointer input,
+html.has-fine-pointer textarea,
+html.has-fine-pointer button {
   cursor: none;
 }
 
-/* Hide default cursor everywhere */
-*, *:hover {
-  cursor: none !important;
+@keyframes blink {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0; }
 }
 
-/* Smooth scroll for anchor links */
-@media (prefers-reduced-motion: no-preference) {
-  html {
-    scroll-behavior: smooth;
-  }
+@keyframes marqueeScroll {
+  from { transform: translateX(0); }
+  to { transform: translateX(-50%); }
 }
 
-/* Selection styling */
-::selection {
-  background: rgba(196, 150, 42, 0.25);
-  color: #1A1612;
+@keyframes orbitSpin {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
 }
 
-/* Scrollbar */
+@keyframes globeSpinOnce {
+  from { transform: rotateY(0deg); }
+  to { transform: rotateY(360deg); }
+}
+
+@keyframes vtReveal {
+  from { clip-path: circle(0% at var(--reveal-x, 50%) var(--reveal-y, 50%)); }
+  to { clip-path: circle(150% at var(--reveal-x, 50%) var(--reveal-y, 50%)); }
+}
+
+::view-transition-old(root) {
+  animation: none;
+}
+::view-transition-new(root) {
+  animation: vtReveal 0.55s ease;
+}
+
+body[data-fullscreen-overlay='1'] .theme-toggle-wrap {
+  display: none;
+}
+
 ::-webkit-scrollbar {
-  width: 4px;
+  width: 10px;
 }
 ::-webkit-scrollbar-track {
-  background: #F5F0E8;
+  background: transparent;
 }
 ::-webkit-scrollbar-thumb {
-  background: rgba(26, 22, 18, 0.2);
-  border-radius: 2px;
-}
-::-webkit-scrollbar-thumb:hover {
-  background: rgba(26, 22, 18, 0.4);
+  background: rgba(140, 140, 140, 0.4);
+  border-radius: 8px;
 }

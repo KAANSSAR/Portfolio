@@ -1,30 +1,28 @@
-import type { Metadata, Viewport } from 'next'
-import './globals.css'
-
-export const viewport: Viewport = {
-  width: 'device-width',
-  initialScale: 1,
-}
+import type { Metadata } from 'next';
+import './globals.css';
+import Providers from '@/components/Providers';
+import { SITE } from '@/lib/data';
 
 export const metadata: Metadata = {
-  title: 'Kanishka Sarkar — Software Engineer & Aspiring Quant Trader',
+  title: `${SITE.name} — Software Engineer`,
   description:
-    'Final-year Software Engineering (Honours) student at the University of Sydney. Builder of Stratum, Later Lah, and multi-agent AI systems. Targeting Flow Traders HK.',
-  openGraph: {
-    title: 'Kanishka Sarkar',
-    description: 'Software Engineer & Aspiring Quant Trader based in Sydney, AU.',
-    type: 'website',
-  },
-}
+    'Final-year Software Engineering (Honours) student at the University of Sydney, building agentic AI systems and quantitative finance tools.',
+};
 
-export default function RootLayout({
-  children,
-}: {
-  children: React.ReactNode
-}) {
+export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
     <html lang="en">
-      <body>{children}</body>
+      <head>
+        <link rel="preconnect" href="https://fonts.googleapis.com" />
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
+        <link
+          href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,500;0,700;0,900;1,400;1,700&family=DM+Sans:opsz,wght@9..40,300;9..40,400;9..40,500&family=DM+Mono:wght@300;400;500&display=swap"
+          rel="stylesheet"
+        />
+      </head>
+      <body>
+        <Providers>{children}</Providers>
+      </body>
     </html>
-  )
+  );
 }

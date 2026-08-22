@@ -1,47 +1,30 @@
-import { CustomCursor } from '@/components/ui/CustomCursor'
-import { Navbar } from '@/components/layout/Navbar'
-import { MarqueeStrip } from '@/components/layout/MarqueeStrip'
-import { Footer } from '@/components/layout/Footer'
-import { HeroSection } from '@/components/sections/HeroSection'
-import { AboutSection } from '@/components/sections/AboutSection'
-import { TimelineSection } from '@/components/sections/TimelineSection'
-import { ProjectsSection } from '@/components/sections/ProjectsSection'
-import { GallerySection } from '@/components/sections/GallerySection'
-import { ContactSection } from '@/components/sections/ContactSection'
-
-function Divider() {
-  return (
-    <div
-      style={{
-        height: '0.5px',
-        background: 'rgba(26,22,18,0.1)',
-        width: '100vw',
-        marginLeft: 'calc(-50vw + 50%)',
-      }}
-    />
-  )
-}
+import ThemeRoot from '@/components/ThemeRoot';
+import PortfolioChrome from '@/components/PortfolioChrome';
+import Hero from '@/components/sections/Hero';
+import Marquee from '@/components/sections/Marquee';
+import About from '@/components/sections/About';
+import Experience from '@/components/sections/Experience';
+import Projects from '@/components/sections/Projects';
+import QuantLab from '@/components/sections/QuantLab';
+import Blog from '@/components/sections/Blog';
+import Gallery from '@/components/sections/Gallery';
+import Contact from '@/components/sections/Contact';
 
 export default function Home() {
   return (
-    <>
-      <CustomCursor />
-      <Navbar />
-      <main>
-        <HeroSection />
-        <MarqueeStrip />
-        <Divider />
-        <AboutSection />
-        <Divider />
-        <TimelineSection />
-        <Divider />
-        <ProjectsSection />
-        <Divider />
-        <GallerySection />
-        <Divider />
-        <ContactSection />
-      </main>
-      <Footer />
-    </>
-  )
+    <ThemeRoot>
+      <PortfolioChrome />
+      <div style={{ position: 'relative', zIndex: 1 }}>
+        <Hero />
+        <Marquee />
+        <About />
+        <Experience />
+        <Projects />
+        <QuantLab />
+        <Blog />
+        <Gallery />
+        <Contact />
+      </div>
+    </ThemeRoot>
+  );
 }
