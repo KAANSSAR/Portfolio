@@ -32,6 +32,7 @@ export default function Logo({ onClick }: { onClick?: () => void }) {
 
   return (
     <div
+      className="ks-logo"
       onClick={handleClick}
       data-cursor-hover="true"
       style={{

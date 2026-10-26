@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useEffect, useRef } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { useTheme } from '@/context/ThemeContext';
 import { SITE } from '@/lib/data';
 
@@ -14,6 +14,17 @@ export default function HeroNameCanvas() {
   useEffect(() => {
     isDarkRef.current = isDark;
   }, [isDark]);
+
+  // Re-runs the particle build only when the breakpoint is crossed, so an
+  // orientation change re-centres the name without rebuilding on every resize.
+  const [centred, setCentred] = useState(false);
+  useEffect(() => {
+    const mq = window.matchMedia('(max-width: 860px)');
+    const sync = () => setCentred(mq.matches);
+    sync();
+    mq.addEventListener('change', sync);
+    return () => mq.removeEventListener('change', sync);
+  }, []);
 
   useEffect(() => {
     const canvas = canvasRef.current;
@@ -30,8 +41,13 @@ export default function HeroNameCanvas() {
     octx.font = '900 92px "Playfair Display", serif';
     octx.textBaseline = 'alphabetic';
     const [first, ...rest] = SITE.name.split(' ');
-    octx.fillText(first, 4, 90);
-    octx.fillText(rest.join(' '), 4, 190);
+    const second = rest.join(' ');
+    // On desktop the name is left-aligned within the canvas; on narrow screens
+    // the hero is centred, and since the glyphs occupy less than the canvas
+    // width, drawing them at a fixed x made the name look off to the left.
+    const xFor = (line: string) => (centred ? Math.max(4, (W - octx.measureText(line).width) / 2) : 4);
+    octx.fillText(first, xFor(first), 90);
+    octx.fillText(second, xFor(second), 190);
 
     let data: Uint8ClampedArray;
     try {
@@ -64,7 +80,7 @@ export default function HeroNameCanvas() {
     draw();
 
     return () => cancelAnimationFrame(raf);
-  }, []);
+  }, [centred]);
 
   return (
     <canvas

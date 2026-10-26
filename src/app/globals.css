@@ -77,3 +77,497 @@ body[data-fullscreen-overlay='1'] .theme-toggle-wrap {
   background: rgba(140, 140, 140, 0.4);
   border-radius: 8px;
 }
+
+/* ---------------------------------------------------------------------------
+   Mobile / tablet layout
+   The section components use inline styles with hardcoded desktop values, so
+   these overrides need !important to win. Targeting by section id and a few
+   helper classes keeps the diff in the components themselves minimal.
+   --------------------------------------------------------------------------- */
+@media (max-width: 860px) {
+  /* Side padding: 4rem of gutter leaves almost nothing on a 375px screen. */
+  #hero,
+  #about,
+  #experience,
+  #projects,
+  #quant-lab,
+  #blog,
+  #contact {
+    padding-left: 1.25rem !important;
+    padding-right: 1.25rem !important;
+  }
+
+  #gallery > div:first-child {
+    padding-left: 1.25rem !important;
+    padding-right: 1.25rem !important;
+  }
+
+  /* Two-column blocks stack. */
+  .resp-2col {
+    grid-template-columns: 1fr !important;
+    gap: 40px !important;
+  }
+
+  /* That -320px pull-up is tuned to where the desktop Experience pin releases;
+     on mobile the journey is shorter, so it would eat the heading. */
+  #projects {
+    margin-top: 0 !important;
+  }
+
+  #hero {
+    min-height: auto !important;
+    padding-top: 7rem !important;
+    padding-bottom: 3rem !important;
+  }
+
+  /* The globe is absolutely positioned off to the right at a fixed size and
+     overlaps the name on a narrow screen. */
+  .hero-globe {
+    display: none !important;
+  }
+
+  /* Recentred rather than hidden: at 12% from the left it collided with the
+     hero text, but centred behind everything it works as a backdrop. */
+  .cube-halo {
+    top: 50% !important;
+    left: 50% !important;
+    width: 300px !important;
+    height: 300px !important;
+    opacity: 0.55;
+  }
+
+  .hero-player {
+    width: 100% !important;
+    max-width: 330px;
+  }
+
+  #contact .contact-panel {
+    padding: 28px 20px !important;
+    border-radius: 18px !important;
+  }
+
+  #contact .contact-form-grid {
+    grid-template-columns: 1fr !important;
+  }
+
+  .fm-menu-wrap-outer {
+    height: auto !important;
+  }
+
+  /* Vertical breathing room between sections. */
+  #about,
+  #quant-lab,
+  #blog,
+  #contact {
+    padding-top: 3rem !important;
+    padding-bottom: 3rem !important;
+  }
+}
+
+@media (max-width: 520px) {
+  #hero,
+  #about,
+  #experience,
+  #projects,
+  #quant-lab,
+  #blog,
+  #contact {
+    padding-left: 1rem !important;
+    padding-right: 1rem !important;
+  }
+}
+
+/* FlowingMenu on touch: rows get an explicit height since the wrapper is no
+   longer a fixed 640px for flex:1 to divide up. */
+@media (max-width: 860px) {
+  .fm-menu__item {
+    flex: none !important;
+    min-height: 104px !important;
+  }
+
+  .fm-menu__item-link {
+    padding: 0 1rem !important;
+    gap: 12px;
+  }
+
+  .fm-menu__item-link > span:last-child {
+    max-width: 45% !important;
+  }
+
+  .fm-marquee__part {
+    font-size: 0.85em;
+  }
+}
+
+/* Fullscreen article readers (Quant Lab notes and Blog posts) on small screens.
+   The wide side padding and fixed-width media inside them overflow otherwise. */
+@media (max-width: 860px) {
+  .reader-body {
+    padding-left: 1.1rem !important;
+    padding-right: 1.1rem !important;
+    padding-top: 3.5rem !important;
+    padding-bottom: 4rem !important;
+  }
+
+  /* Charts, screenshots and anything else embedded in a note. */
+  .reader-body img,
+  .reader-body video,
+  .reader-body iframe,
+  .reader-body table {
+    max-width: 100% !important;
+    height: auto !important;
+  }
+
+  /* Code blocks and LaTeX scroll sideways instead of stretching the page. */
+  .reader-body pre,
+  .reader-body .katex-display {
+    overflow-x: auto !important;
+    max-width: 100% !important;
+  }
+
+  .reader-body .katex-display > .katex {
+    font-size: 0.92em;
+  }
+
+  /* Long URLs and identifiers in body copy. */
+  .reader-body p,
+  .reader-body li,
+  .reader-body h1,
+  .reader-body h2,
+  .reader-body h3 {
+    overflow-wrap: break-word;
+    word-break: break-word;
+  }
+
+  /* Tag rows were a single non-wrapping line. */
+  .reader-body > div[style*="display: flex"] {
+    flex-wrap: wrap;
+  }
+}
+
+/* ---------------------------------------------------------------------------
+   Mobile typography
+   The headings use clamp() whose *minimum* was sized for desktop, so on a
+   ~390px screen they pin to that minimum and read far too large. These set
+   explicit phone sizes instead.
+   --------------------------------------------------------------------------- */
+@media (max-width: 860px) {
+  #about h2,
+  #experience h2,
+  #projects h2,
+  #gallery h2,
+  #contact h2,
+  #quant-lab h2,
+  #blog h2 {
+    font-size: 27px !important;
+    line-height: 1.12 !important;
+    margin-bottom: 18px !important;
+  }
+
+  #contact h3 {
+    font-size: 19px !important;
+  }
+
+  .reader-body h1 {
+    font-size: 23px !important;
+    line-height: 1.18 !important;
+  }
+
+  /* Eyebrow labels above each heading. */
+  .sec-label {
+    font-size: 0.56rem !important;
+    margin-bottom: 18px !important;
+  }
+
+  /* Body copy. */
+  #about p,
+  #gallery p,
+  #contact p,
+  .reader-body p,
+  .reader-body li {
+    font-size: 0.85rem !important;
+    line-height: 1.7 !important;
+  }
+
+  /* About stat rows: the counter was 2.6rem in a 100px-wide column. */
+  #about .stat-value {
+    font-size: 1.75rem !important;
+    min-width: 62px !important;
+  }
+
+  #about .stat-label {
+    font-size: 0.72rem !important;
+  }
+
+  /* Skill tags. */
+  #about .skill-tag {
+    font-size: 0.54rem !important;
+    padding: 5px 9px !important;
+  }
+
+  /* Hero. */
+  .hero-location {
+    font-size: 0.58rem !important;
+  }
+
+  .hero-currently {
+    font-size: 0.58rem !important;
+  }
+
+  /* Marquee strip. */
+  .marquee-item {
+    font-size: 0.55rem !important;
+    padding: 0 18px !important;
+  }
+
+  /* Project rows. */
+  .fm-menu__item-link > span:first-child > span:last-child {
+    font-size: 1.05rem !important;
+  }
+
+  .fm-menu__item-link > span:last-child span {
+    font-size: 0.5rem !important;
+    padding: 3px 6px !important;
+  }
+
+  /* The notch is 250px wide, which crowds the logo on a narrow screen.
+     Size the closed and open states separately, otherwise the expanded
+     content gets clipped to the collapsed box. */
+  .dyn-notch {
+    transform: translateX(-50%) scale(0.92) !important;
+    transform-origin: top center;
+  }
+
+  .dyn-notch[data-open='0'] {
+    width: 196px !important;
+    height: 56px !important;
+  }
+
+  .dyn-notch[data-open='1'] {
+    width: min(300px, calc(100vw - 28px)) !important;
+    height: 158px !important;
+  }
+}
+
+/* ---------------------------------------------------------------------------
+   Mobile chrome and article alignment
+   --------------------------------------------------------------------------- */
+@media (max-width: 860px) {
+  /* The toggle sat at right:88, which put it underneath the notch on a narrow
+     screen and clipped it against the edge. */
+  .theme-toggle-btn {
+    top: 14px !important;
+    right: 12px !important;
+    width: 52px !important;
+    height: 28px !important;
+  }
+
+  /* The KS mark is fixed at the top left and sections scrolled underneath it,
+     so headings and "back" links collided with it. Shrink it and tuck it in. */
+  .ks-logo {
+    top: 12px !important;
+    left: 12px !important;
+    width: 40px !important;
+    height: 40px !important;
+  }
+
+  /* Clear the fixed header band so section labels aren't printed under it. */
+  #about,
+  #experience,
+  #projects,
+  #quant-lab,
+  #blog,
+  #contact {
+    padding-top: 5rem !important;
+  }
+
+  .reader-body {
+    padding-top: 5.25rem !important;
+  }
+
+  /* Article slides were a two-column grid, which is what pushed the charts and
+     code blocks off the right edge and produced a horizontal scrollbar. */
+  .slide-2col {
+    grid-template-columns: 1fr !important;
+    gap: 26px !important;
+  }
+
+  /* Nothing in a reader should be able to widen the page. */
+  .reader-body,
+  .reader-body * {
+    max-width: 100%;
+  }
+
+  .reader-body {
+    overflow-x: hidden;
+  }
+
+  /* The share and menu buttons float over body copy at the foot of a section,
+     so shrink them and keep a little clear space under each section. */
+  .fab-share {
+    transform: scale(0.8);
+    transform-origin: bottom left;
+  }
+
+  .unfold-menu {
+    transform: scale(0.85);
+    transform-origin: bottom right;
+  }
+
+  #about,
+  #gallery,
+  #contact,
+  #quant-lab,
+  #blog {
+    padding-bottom: 5.5rem !important;
+  }
+}
+
+/* ---------------------------------------------------------------------------
+   Research note / blog carousels on phones
+   Both already use CSS scroll-snap, so swiping works natively; the cards were
+   just a fixed 300px so several showed at once. One card per screen, with the
+   next one peeking so it reads as swipeable.
+   --------------------------------------------------------------------------- */
+@media (max-width: 860px) {
+  .carousel-track {
+    gap: 14px !important;
+    scroll-padding-left: 0;
+    -webkit-overflow-scrolling: touch;
+    scroll-snap-type: x mandatory !important;
+  }
+
+  .carousel-card {
+    flex: 0 0 86% !important;
+    max-width: 86%;
+    scroll-snap-align: center !important;
+  }
+
+  /* NoteCard / PostCard carry their own flex basis. */
+  .carousel-card > div {
+    flex: 0 0 100% !important;
+    width: 100% !important;
+  }
+
+  /* Swipe replaces them, and at left/right -18px they were clipped anyway. */
+  .carousel-arrow {
+    display: none !important;
+  }
+
+  /* ----- Contact section: centre the whole block ----- */
+  #contact .contact-panel {
+    text-align: center;
+  }
+
+  #contact .sec-label,
+  #contact .contact-social-row,
+  #contact .contact-resume {
+    justify-content: center !important;
+  }
+
+  #contact .sec-label > span:last-child {
+    display: none;
+  }
+
+  #contact .contact-resume {
+    display: flex !important;
+    margin-left: 0 !important;
+  }
+
+  #contact .contact-form-grid {
+    max-width: 420px;
+    margin-left: auto !important;
+    margin-right: auto !important;
+  }
+
+  /* Inputs keep their own left-aligned text inside a centred column. */
+  #contact .contact-form-grid input,
+  #contact .contact-form-grid textarea {
+    text-align: center;
+  }
+
+  #contact .contact-send-row {
+    justify-content: center !important;
+  }
+
+  #contact .contact-footer-row {
+    justify-content: center !important;
+    text-align: center;
+  }
+}
+
+/* ---------------------------------------------------------------------------
+   Hero centring, share button alignment, experience labels
+   --------------------------------------------------------------------------- */
+@media (max-width: 860px) {
+  .hero-content {
+    text-align: center;
+    margin-left: auto;
+    margin-right: auto;
+  }
+
+  /* Location line and the "Currently —" row are flex rows. */
+  .hero-location {
+    justify-content: center !important;
+    flex-wrap: wrap;
+  }
+
+  .hero-content > div:nth-of-type(2) {
+    justify-content: center !important;
+  }
+
+  /* The name canvas carries a -8px nudge for optical alignment on desktop. */
+  .hero-content canvas {
+    margin-left: auto !important;
+    margin-right: auto !important;
+  }
+
+  .hero-player {
+    margin-left: auto !important;
+    margin-right: auto !important;
+  }
+
+  /* The share FAB's container sat at left:28 and its button another 28 inside,
+     so it rode 56px in while the nav button sat 28px from the right edge. */
+  .fab-share {
+    left: 0 !important;
+  }
+
+  /* Experience node labels: narrower so left and right rows stay distinct. */
+  .exp-label {
+    width: 44vw !important;
+    max-width: 44vw !important;
+  }
+
+  /* tag, year, company */
+  .exp-label > div:nth-child(1),
+  .exp-label > div:nth-child(2),
+  .exp-label > div:nth-child(4) {
+    font-size: 0.62rem !important;
+    line-height: 1.35 !important;
+  }
+
+  /* role title */
+  .exp-label > div:nth-child(3) {
+    font-size: 0.95rem !important;
+    line-height: 1.2 !important;
+  }
+}
+
+@media (max-width: 860px) {
+  /* .fm-menu__item carries text-align:center, which centred the second line of
+     wrapped project titles. */
+  .fm-menu__item-link > span:first-child {
+    text-align: left !important;
+  }
+
+  .fm-menu__item-link > span:first-child > span:last-child {
+    text-align: left !important;
+    display: block;
+  }
+
+  /* Music player: was running wider than the rest of the centred hero. */
+  .hero-player {
+    max-width: 268px !important;
+  }
+}

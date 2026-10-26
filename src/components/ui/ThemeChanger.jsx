@@ -5,6 +5,7 @@ import React, { useState, useEffect, useRef, useCallback, useMemo } from 'react'
 function ThemeChanger({ isDark = false, onToggle, ink = '#0A0A0A', bg = '#FFFFFF' }) {
   return (
     <button
+      className="theme-toggle-btn"
       onClick={onToggle}
       aria-label="Toggle theme"
       style={{

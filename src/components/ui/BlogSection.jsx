@@ -67,11 +67,11 @@ function PostCarousel({ items, accentColor, onOpen, editMode }) {
   const scrollBy = dir => { if (scrollRef.current) scrollRef.current.scrollBy({ left: dir * 324, behavior: 'smooth' }); };
   return (
     <div style={{ position: 'relative' }}>
-      <span onClick={() => scrollBy(-1)} data-cursor-hover="true" style={{ position: 'absolute', left: -18, top: '50%', transform: 'translateY(-50%)', zIndex: 2, cursor: 'pointer', fontSize: '1.6rem', color: accentColor, background: '#141210', borderRadius: '50%', width: 34, height: 34, display: 'flex', alignItems: 'center', justifyContent: 'center', border: '1px solid rgba(255,255,255,0.1)' }}>‹</span>
-      <div ref={scrollRef} style={{ display: 'flex', gap: 24, overflowX: 'auto', scrollSnapType: 'x mandatory', padding: '4px 2px 12px', scrollbarWidth: 'none' }}>
-        {items.map((p, i) => <div key={p.id || i} style={{ scrollSnapAlign: 'start' }}><PostCard p={p} accentColor={accentColor} onClick={() => onOpen(p)} editMode={editMode} /></div>)}
+      <span onClick={() => scrollBy(-1)} data-cursor-hover="true" className="carousel-arrow" style={{ position: 'absolute', left: -18, top: '50%', transform: 'translateY(-50%)', zIndex: 2, cursor: 'pointer', fontSize: '1.6rem', color: accentColor, background: '#141210', borderRadius: '50%', width: 34, height: 34, display: 'flex', alignItems: 'center', justifyContent: 'center', border: '1px solid rgba(255,255,255,0.1)' }}>‹</span>
+      <div ref={scrollRef} className="carousel-track" style={{ display: 'flex', gap: 24, overflowX: 'auto', scrollSnapType: 'x mandatory', padding: '4px 2px 12px', scrollbarWidth: 'none' }}>
+        {items.map((p, i) => <div key={p.id || i} className="carousel-card" style={{ scrollSnapAlign: 'start' }}><PostCard p={p} accentColor={accentColor} onClick={() => onOpen(p)} editMode={editMode} /></div>)}
       </div>
-      <span onClick={() => scrollBy(1)} data-cursor-hover="true" style={{ position: 'absolute', right: -18, top: '50%', transform: 'translateY(-50%)', zIndex: 2, cursor: 'pointer', fontSize: '1.6rem', color: accentColor, background: '#141210', borderRadius: '50%', width: 34, height: 34, display: 'flex', alignItems: 'center', justifyContent: 'center', border: '1px solid rgba(255,255,255,0.1)' }}>›</span>
+      <span onClick={() => scrollBy(1)} data-cursor-hover="true" className="carousel-arrow" style={{ position: 'absolute', right: -18, top: '50%', transform: 'translateY(-50%)', zIndex: 2, cursor: 'pointer', fontSize: '1.6rem', color: accentColor, background: '#141210', borderRadius: '50%', width: 34, height: 34, display: 'flex', alignItems: 'center', justifyContent: 'center', border: '1px solid rgba(255,255,255,0.1)' }}>›</span>
     </div>
   );
 }
@@ -192,7 +192,7 @@ function BlogSection({
 
   return (
     <div>
-      <div style={{ fontFamily: "'DM Mono', monospace", fontSize: '0.68rem', letterSpacing: '0.22em', textTransform: 'uppercase', display: 'flex', alignItems: 'center', gap: 16, marginBottom: 16, color: inkFaint }}>
+      <div className="sec-label" style={{ fontFamily: "'DM Mono', monospace", fontSize: '0.68rem', letterSpacing: '0.22em', textTransform: 'uppercase', display: 'flex', alignItems: 'center', gap: 16, marginBottom: 16, color: inkFaint }}>
         <span style={{ color: accentColor }}>{sectionLabel}</span>
         <span style={{ flex: 1, height: 1, maxWidth: 80, background: accentColor, opacity: 0.4 }} />
         <span onClick={() => authed && setEditMode(m => !m)} data-cursor-hover="true" style={{ cursor: authed ? 'pointer' : 'default', color: editMode ? accentColor : inkFaint, opacity: authed ? 1 : 0.4 }}>Edit</span>
@@ -235,7 +235,7 @@ function BlogSection({
 
       {activePost && !editing && (
         <div style={{ position: 'fixed', inset: 0, zIndex: 300, background: bg, overflowY: 'auto' }}>
-          <div style={{ maxWidth: 780, margin: '0 auto', padding: '80px 32px 120px' }}>
+          <div className="reader-body" style={{ maxWidth: 780, margin: '0 auto', padding: '80px 32px 120px' }}>
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 40 }}>
               <span onClick={() => setActivePost(null)} data-cursor-hover="true" style={{ cursor: 'pointer', fontFamily: "'DM Mono', monospace", fontSize: '0.7rem', letterSpacing: '0.1em', textTransform: 'uppercase', color: inkFaint }}>← Back</span>
               {authed && (
@@ -260,7 +260,7 @@ function BlogSection({
 
       {editing && (
         <div style={{ position: 'fixed', inset: 0, zIndex: 350, background: bg, overflowY: 'auto' }}>
-          <div style={{ maxWidth: 780, margin: '0 auto', padding: '60px 32px 120px' }}>
+          <div className="reader-body" style={{ maxWidth: 780, margin: '0 auto', padding: '60px 32px 120px' }}>
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 32 }}>
               <span onClick={() => setEditing(null)} data-cursor-hover="true" style={{ cursor: 'pointer', fontFamily: "'DM Mono', monospace", fontSize: '0.7rem', letterSpacing: '0.1em', textTransform: 'uppercase', color: inkFaint }}>Cancel</span>
               <button onClick={savePost} style={{ padding: '10px 20px', borderRadius: 6, border: 'none', background: accentColor, color: '#0A0A0A', fontFamily: "'DM Mono', monospace", fontSize: '0.7rem', letterSpacing: '0.08em', textTransform: 'uppercase', cursor: 'pointer' }}>Save & publish</button>

@@ -218,7 +218,7 @@ function Equation({ tex }) {
 
 function Slide({ slide }) {
   return (
-    <div style={{ display: 'grid', gridTemplateColumns: '1.1fr 1fr', gap: 56, alignItems: 'start' }}>
+    <div className="slide-2col" style={{ display: 'grid', gridTemplateColumns: '1.1fr 1fr', gap: 56, alignItems: 'start' }}>
       <div>
         <div style={{ fontFamily: "'DM Mono', monospace", fontSize: '0.62rem', letterSpacing: '0.2em', textTransform: 'uppercase', color: '#F5C518', marginBottom: 14 }}>{slide.kicker}</div>
         <h3 style={{ fontFamily: "'Playfair Display', serif", fontWeight: 700, fontSize: 'clamp(22px,2.6vw,32px)', lineHeight: 1.2, color: '#F2EEE6', margin: '0 0 20px' }}>{slide.headline}</h3>
@@ -253,7 +253,7 @@ function ResearchCaseStudy({ slug, onClose, note, authed, onEdit }) {
   if (note.format === 'simple') {
     return (
       <div style={{ position: 'fixed', inset: 0, zIndex: 320, background: '#151210', overflowY: 'auto' }}>
-        <div style={{ maxWidth: 780, margin: '0 auto', padding: '64px 48px 100px' }}>
+        <div className="reader-body" style={{ maxWidth: 780, margin: '0 auto', padding: '64px 48px 100px' }}>
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 32 }}>
             <span onClick={onClose} data-cursor-hover="true" style={{ cursor: 'pointer', fontFamily: "'DM Mono', monospace", fontSize: '0.7rem', letterSpacing: '0.1em', textTransform: 'uppercase', color: '#8C8676' }}>← Back to Quant Lab</span>
             {authed && <span onClick={onEdit} data-cursor-hover="true" style={{ cursor: 'pointer', fontFamily: "'DM Mono', monospace", fontSize: '0.65rem', letterSpacing: '0.1em', textTransform: 'uppercase', color: '#F5C518' }}>Edit</span>}
@@ -273,7 +273,7 @@ function ResearchCaseStudy({ slug, onClose, note, authed, onEdit }) {
   }
   return (
     <div style={{ position: 'fixed', inset: 0, zIndex: 320, background: '#151210', overflowY: 'auto' }}>
-      <div style={{ maxWidth: 1100, margin: '0 auto', padding: '64px 48px 100px' }}>
+      <div className="reader-body" style={{ maxWidth: 1100, margin: '0 auto', padding: '64px 48px 100px' }}>
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 32 }}>
           <span onClick={onClose} data-cursor-hover="true" style={{ cursor: 'pointer', fontFamily: "'DM Mono', monospace", fontSize: '0.7rem', letterSpacing: '0.1em', textTransform: 'uppercase', color: '#8C8676' }}>← Back to Quant Lab</span>
           {authed && <span onClick={onEdit} data-cursor-hover="true" style={{ cursor: 'pointer', fontFamily: "'DM Mono', monospace", fontSize: '0.65rem', letterSpacing: '0.1em', textTransform: 'uppercase', color: '#F5C518' }}>Edit</span>}
@@ -330,11 +330,11 @@ function CardCarousel({ items, accentColor, onOpen, editMode, onEditCard }) {
   const scrollBy = dir => { if (scrollRef.current) scrollRef.current.scrollBy({ left: dir * 324, behavior: 'smooth' }); };
   return (
     <div style={{ position: 'relative' }}>
-      <span onClick={() => scrollBy(-1)} data-cursor-hover="true" style={{ position: 'absolute', left: -18, top: '50%', transform: 'translateY(-50%)', zIndex: 2, cursor: 'pointer', fontSize: '1.6rem', color: accentColor, background: '#141210', borderRadius: '50%', width: 34, height: 34, display: 'flex', alignItems: 'center', justifyContent: 'center', border: '1px solid rgba(255,255,255,0.1)' }}>‹</span>
-      <div ref={scrollRef} style={{ display: 'flex', gap: 24, overflowX: 'auto', scrollSnapType: 'x mandatory', padding: '4px 2px 12px', scrollbarWidth: 'none' }}>
-        {items.map((n, i) => <div key={i} style={{ scrollSnapAlign: 'start' }}><NoteCard n={n} accentColor={accentColor} onClick={() => onOpen(n)} editMode={editMode} onEditCard={() => onEditCard(n)} /></div>)}
+      <span onClick={() => scrollBy(-1)} data-cursor-hover="true" className="carousel-arrow" style={{ position: 'absolute', left: -18, top: '50%', transform: 'translateY(-50%)', zIndex: 2, cursor: 'pointer', fontSize: '1.6rem', color: accentColor, background: '#141210', borderRadius: '50%', width: 34, height: 34, display: 'flex', alignItems: 'center', justifyContent: 'center', border: '1px solid rgba(255,255,255,0.1)' }}>‹</span>
+      <div ref={scrollRef} className="carousel-track" style={{ display: 'flex', gap: 24, overflowX: 'auto', scrollSnapType: 'x mandatory', padding: '4px 2px 12px', scrollbarWidth: 'none' }}>
+        {items.map((n, i) => <div key={i} className="carousel-card" style={{ scrollSnapAlign: 'start' }}><NoteCard n={n} accentColor={accentColor} onClick={() => onOpen(n)} editMode={editMode} onEditCard={() => onEditCard(n)} /></div>)}
       </div>
-      <span onClick={() => scrollBy(1)} data-cursor-hover="true" style={{ position: 'absolute', right: -18, top: '50%', transform: 'translateY(-50%)', zIndex: 2, cursor: 'pointer', fontSize: '1.6rem', color: accentColor, background: '#141210', borderRadius: '50%', width: 34, height: 34, display: 'flex', alignItems: 'center', justifyContent: 'center', border: '1px solid rgba(255,255,255,0.1)' }}>›</span>
+      <span onClick={() => scrollBy(1)} data-cursor-hover="true" className="carousel-arrow" style={{ position: 'absolute', right: -18, top: '50%', transform: 'translateY(-50%)', zIndex: 2, cursor: 'pointer', fontSize: '1.6rem', color: accentColor, background: '#141210', borderRadius: '50%', width: 34, height: 34, display: 'flex', alignItems: 'center', justifyContent: 'center', border: '1px solid rgba(255,255,255,0.1)' }}>›</span>
     </div>
   );
 }
@@ -489,7 +489,7 @@ function QuantLabSection({ ink = '#0A0A0A', inkFaint = '#8C8C8C', inkMuted = '#4
 
   return (
     <div>
-      <div style={{ fontFamily: "'DM Mono', monospace", fontSize: '0.68rem', letterSpacing: '0.22em', textTransform: 'uppercase', display: 'flex', alignItems: 'center', gap: 16, marginBottom: 16, color: inkFaint }}>
+      <div className="sec-label" style={{ fontFamily: "'DM Mono', monospace", fontSize: '0.68rem', letterSpacing: '0.22em', textTransform: 'uppercase', display: 'flex', alignItems: 'center', gap: 16, marginBottom: 16, color: inkFaint }}>
         <span style={{ color: accentColor }}>Quant Lab</span>
         <span style={{ flex: 1, height: 1, maxWidth: 80, background: accentColor, opacity: 0.4 }} />
         <span onClick={() => authed && setEditMode(m => !m)} data-cursor-hover="true" style={{ cursor: authed ? 'pointer' : 'default', color: editMode ? accentColor : inkFaint, opacity: authed ? 1 : 0.4 }}>Edit</span>
@@ -541,7 +541,7 @@ function QuantLabSection({ ink = '#0A0A0A', inkFaint = '#8C8C8C', inkMuted = '#4
 
       {simpleEditing && (
         <div style={{ position: 'fixed', inset: 0, zIndex: 360, background: '#151210', overflowY: 'auto' }}>
-          <div style={{ maxWidth: 780, margin: '0 auto', padding: '60px 32px 120px' }}>
+          <div className="reader-body" style={{ maxWidth: 780, margin: '0 auto', padding: '60px 32px 120px' }}>
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 32 }}>
               <span onClick={() => setSimpleEditing(null)} data-cursor-hover="true" style={{ cursor: 'pointer', fontFamily: "'DM Mono', monospace", fontSize: '0.7rem', letterSpacing: '0.1em', textTransform: 'uppercase', color: '#8C8676' }}>Cancel</span>
               <button onClick={saveSimple} style={{ padding: '10px 20px', borderRadius: 6, border: 'none', background: accentColor, color: '#0A0A0A', fontFamily: "'DM Mono', monospace", fontSize: '0.7rem', letterSpacing: '0.08em', textTransform: 'uppercase', cursor: 'pointer' }}>Save & publish</button>
@@ -571,7 +571,7 @@ function QuantLabSection({ ink = '#0A0A0A', inkFaint = '#8C8C8C', inkMuted = '#4
 
       {editingSlug && (
         <div style={{ position: 'fixed', inset: 0, zIndex: 360, background: '#151210', overflowY: 'auto' }}>
-          <div style={{ maxWidth: 800, margin: '0 auto', padding: '60px 32px 100px' }}>
+          <div className="reader-body" style={{ maxWidth: 800, margin: '0 auto', padding: '60px 32px 100px' }}>
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 20 }}>
               <span onClick={() => setEditingSlug(null)} data-cursor-hover="true" style={{ cursor: 'pointer', fontFamily: "'DM Mono', monospace", fontSize: '0.7rem', letterSpacing: '0.1em', textTransform: 'uppercase', color: '#8C8676' }}>Cancel</span>
               <button onClick={saveEdit} style={{ padding: '10px 20px', borderRadius: 6, border: 'none', background: accentColor, color: '#0A0A0A', fontFamily: "'DM Mono', monospace", fontSize: '0.7rem', letterSpacing: '0.08em', textTransform: 'uppercase', cursor: 'pointer' }}>Save</button>

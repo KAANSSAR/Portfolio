@@ -1,7 +1,15 @@
-import type { Metadata } from 'next';
+import type { Metadata, Viewport } from 'next';
 import './globals.css';
 import Providers from '@/components/Providers';
 import { SITE } from '@/lib/data';
+
+// Without this, phones assume a ~980px-wide desktop page and scale the whole
+// site down, which is what made everything look tiny on mobile.
+export const viewport: Viewport = {
+  width: 'device-width',
+  initialScale: 1,
+  viewportFit: 'cover',
+};
 
 export const metadata: Metadata = {
   title: `${SITE.name} — Software Engineer`,

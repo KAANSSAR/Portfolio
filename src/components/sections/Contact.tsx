@@ -91,6 +91,7 @@ export default function Contact() {
   return (
     <section id="contact" style={{ padding: '4.5rem 4rem', color: T.ink }}>
       <div
+        className="contact-panel"
         style={{
           maxWidth: 1200, margin: '0 auto', position: 'relative', borderRadius: 28, padding: 64,
           overflow: 'hidden', isolation: 'isolate', boxShadow: '0 16px 48px rgba(0,0,0,0.4)',
@@ -106,9 +107,9 @@ export default function Contact() {
         <div style={{ position: 'absolute', inset: 0, borderRadius: 28, boxShadow: 'inset 0 1.5px 0 rgba(255,255,255,0.35), inset 0 -1px 0 rgba(0,0,0,0.2)', border: `0.5px solid rgba(${T.inkRgb},0.18)`, zIndex: 0 }} />
 
         <div style={{ position: 'relative', zIndex: 1 }}>
-          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 96, alignItems: 'center' }}>
+          <div className="resp-2col" style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 96, alignItems: 'center' }}>
             <div>
-              <div style={{ fontFamily: "'DM Mono', monospace", fontSize: '0.68rem', letterSpacing: '0.22em', textTransform: 'uppercase', display: 'flex', alignItems: 'center', gap: 16, marginBottom: 48, color: `rgba(${T.inkRgb},0.4)` }}>
+              <div className="sec-label" style={{ fontFamily: "'DM Mono', monospace", fontSize: '0.68rem', letterSpacing: '0.22em', textTransform: 'uppercase', display: 'flex', alignItems: 'center', gap: 16, marginBottom: 48, color: `rgba(${T.inkRgb},0.4)` }}>
                 <span style={{ color: '#FF8C42' }}>Contact</span>
                 <span style={{ flex: 1, height: 1, maxWidth: 80, background: '#FF8C42', opacity: 0.4 }} />
               </div>
@@ -133,7 +134,7 @@ export default function Contact() {
                   {SITE.email}
                 </a>
               </div>
-              <div style={{ display: 'flex', gap: 20 }}>
+              <div className="contact-social-row" style={{ display: 'flex', gap: 20 }}>
                 <a href={SOCIAL_LINKS.instagram} target="_blank" rel="noopener noreferrer" aria-label="Instagram" data-cursor-hover="true" onMouseEnter={spinOnHover} style={{ display: 'flex', color: '#FF5DA2', transition: 'color .2s', transformStyle: 'preserve-3d' }}>
                   <svg width="22" height="22" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2.16c3.2 0 3.58.01 4.85.07 1.17.05 1.8.25 2.23.41.56.22.96.48 1.38.9.42.42.68.82.9 1.38.16.42.36 1.06.41 2.23.06 1.27.07 1.65.07 4.85s-.01 3.58-.07 4.85c-.05 1.17-.25 1.8-.41 2.23-.22.56-.48.96-.9 1.38-.42.42-.82.68-1.38.9-.42.16-1.06.36-2.23.41-1.27.06-1.65.07-4.85.07s-3.58-.01-4.85-.07c-1.17-.05-1.8-.25-2.23-.41a3.72 3.72 0 01-1.38-.9 3.72 3.72 0 01-.9-1.38c-.16-.42-.36-1.06-.41-2.23-.06-1.27-.07-1.65-.07-4.85s.01-3.58.07-4.85c.05-1.17.25-1.8.41-2.23.22-.56.48-.96.9-1.38.42-.42.82-.68 1.38-.9.42-.16 1.06-.36 2.23-.41 1.27-.06 1.65-.07 4.85-.07M12 0C8.74 0 8.33.01 7.05.07c-1.28.06-2.15.26-2.91.56a5.88 5.88 0 00-2.13 1.39A5.88 5.88 0 00.63 4.15c-.3.76-.5 1.63-.56 2.91C.01 8.33 0 8.74 0 12s.01 3.67.07 4.95c.06 1.28.26 2.15.56 2.91.3.79.71 1.46 1.39 2.13a5.88 5.88 0 002.13 1.39c.76.3 1.63.5 2.91.56C8.33 23.99 8.74 24 12 24s3.67-.01 4.95-.07c1.28-.06 2.15-.26 2.91-.56a5.88 5.88 0 002.13-1.39 5.88 5.88 0 001.39-2.13c.3-.76.5-1.63.56-2.91.06-1.28.07-1.69.07-4.95s-.01-3.67-.07-4.95c-.06-1.28-.26-2.15-.56-2.91a5.88 5.88 0 00-1.39-2.13A5.88 5.88 0 0019.86.63c-.76-.3-1.63-.5-2.91-.56C15.67.01 15.26 0 12 0zm0 5.84a6.16 6.16 0 100 12.32 6.16 6.16 0 000-12.32zm0 10.16a4 4 0 110-8 4 4 0 010 8zm6.41-10.4a1.44 1.44 0 11-2.88 0 1.44 1.44 0 012.88 0z" /></svg>
                 </a>
@@ -144,7 +145,7 @@ export default function Contact() {
                   <svg width="22" height="22" viewBox="0 0 24 24" fill="currentColor"><path d="M20.45 20.45h-3.55v-5.57c0-1.33-.02-3.03-1.85-3.03-1.85 0-2.14 1.45-2.14 2.94v5.66H9.36V9h3.41v1.56h.05c.47-.9 1.63-1.85 3.36-1.85 3.6 0 4.27 2.37 4.27 5.45v6.29zM5.34 7.43a2.06 2.06 0 11.02-4.12 2.06 2.06 0 01-.02 4.12zM7.12 20.45H3.56V9h3.56v11.45zM22.22 0H1.77C.79 0 0 .77 0 1.72v20.56C0 23.23.79 24 1.77 24h20.45c.98 0 1.78-.77 1.78-1.72V1.72C24 .77 23.2 0 22.22 0z" /></svg>
                 </a>
               </div>
-              <div style={{ marginLeft: -24 }}>
+              <div className="contact-resume" style={{ marginLeft: -24 }}>
                 <HoldConfirm href={SITE.resumeUrl} download borderColor={T.gold} bg="#0A0A0A" textColor="#FFFFFF">
                   Download résumé
                 </HoldConfirm>
@@ -156,12 +157,12 @@ export default function Contact() {
             <h3 style={{ fontFamily: "'Playfair Display', serif", fontWeight: 700, fontSize: 'clamp(24px,3vw,36px)', margin: '0 0 32px', color: T.ink }}>
               Drop me a line <em style={{ fontStyle: 'italic', color: T.gold }}>directly.</em>
             </h3>
-            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 28, maxWidth: 640 }}>
+            <div className="contact-form-grid" style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 28, maxWidth: 640 }}>
               <input ref={nameRef} placeholder="Name" style={{ background: 'transparent', border: 'none', borderBottom: `0.5px solid rgba(${T.inkRgb},0.25)`, padding: '12px 0', color: T.ink, fontFamily: "'DM Sans', sans-serif", fontSize: '0.95rem', outline: 'none' }} />
               <input ref={emailRef} placeholder="Email" style={{ background: 'transparent', border: 'none', borderBottom: `0.5px solid rgba(${T.inkRgb},0.25)`, padding: '12px 0', color: T.ink, fontFamily: "'DM Sans', sans-serif", fontSize: '0.95rem', outline: 'none' }} />
               <input ref={subjectRef} placeholder="Subject" style={{ gridColumn: '1 / -1', background: 'transparent', border: 'none', borderBottom: `0.5px solid rgba(${T.inkRgb},0.25)`, padding: '12px 0', color: T.ink, fontFamily: "'DM Sans', sans-serif", fontSize: '0.95rem', outline: 'none' }} />
               <textarea ref={messageRef} placeholder="Message" rows={3} style={{ gridColumn: '1 / -1', background: 'transparent', border: 'none', borderBottom: `0.5px solid rgba(${T.inkRgb},0.25)`, padding: '12px 0', color: T.ink, fontFamily: "'DM Sans', sans-serif", fontSize: '0.95rem', outline: 'none', resize: 'none' }} />
-              <div style={{ gridColumn: '1 / -1', display: 'flex', alignItems: 'center', gap: 20 }}>
+              <div className="contact-send-row" style={{ gridColumn: '1 / -1', display: 'flex', alignItems: 'center', gap: 20 }}>
                 <EyeFollowButton onClick={onFakeSend} color="#FFFFFF" bg="#0A0A0A">
                   Send Message
                 </EyeFollowButton>
@@ -171,7 +172,7 @@ export default function Contact() {
             </div>
           </div>
 
-          <div style={{ marginTop: 64, paddingTop: 32, borderTop: `0.5px solid rgba(${T.inkRgb},0.12)`, display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 16, flexWrap: 'wrap' }}>
+          <div className="contact-footer-row" style={{ marginTop: 64, paddingTop: 32, borderTop: `0.5px solid rgba(${T.inkRgb},0.12)`, display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 16, flexWrap: 'wrap' }}>
             <span style={{ fontFamily: "'DM Mono', monospace", fontSize: '0.62rem', letterSpacing: '0.15em', color: `rgba(${T.inkRgb},0.4)` }}>
               © 2026 {SITE.name}
             </span>

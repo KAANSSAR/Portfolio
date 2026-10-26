@@ -53,6 +53,11 @@ function ExperienceJourney({ entries = [], accent = '#C4962A', bg = '#0A0908', t
 
       const rig = new THREE.Group();
       scene.add(rig);
+      // On a phone the camera's horizontal field of view is far narrower than
+      // on desktop (fov is vertical, so a tall aspect ratio shrinks it), which
+      // pushed the +/-1.9 nodes off both edges. Squeeze the thread inward
+      // instead of changing the alternating left/right layout.
+      const xSqueeze = () => (canvas.clientWidth < 700 ? 0.4 : 1);
 
       const rawPts = buildCurvePoints(entries.length).map(p => new THREE.Vector3(p.x, p.y, p.z));
       const curve = new THREE.CatmullRomCurve3(rawPts, false, 'catmullrom', 0.5);
@@ -152,6 +157,8 @@ function ExperienceJourney({ entries = [], accent = '#C4962A', bg = '#0A0908', t
         checkNodeReach(revIndex);
         camera.position.set(0, -1.9, 6.5);
         camera.rotation.set(0, 0, 0);
+        const xs = xSqueeze();
+        rig.scale.x = xs;
         rig.position.y = -revIndex * STEP_Y;
         const curT = Math.max(0, Math.min(1, revIndex / (n - 1)));
         const curLocal = curve.getPoint(curT);
@@ -160,7 +167,7 @@ function ExperienceJourney({ entries = [], accent = '#C4962A', bg = '#0A0908', t
         const isWalking = scrollSpeed > 0.00003;
         if (isWalking) walkClock += scrollSpeed * 7000;
         if (astroRef.current) {
-          const worldPos = new THREE.Vector3(curLocal.x, curLocal.y + rig.position.y, curLocal.z + 0.9);
+          const worldPos = new THREE.Vector3(curLocal.x * xs, curLocal.y + rig.position.y, curLocal.z + 0.9);
           const av = worldPos.project(camera);
           if (av.z > -1 && av.z < 1) {
             const ax = (av.x * 0.5 + 0.5) * canvas.clientWidth;
@@ -196,17 +203,30 @@ function ExperienceJourney({ entries = [], accent = '#C4962A', bg = '#0A0908', t
           nd.mesh.material.opacity = active;
           nd.halo.material.opacity = 0.3 * active;
           const pulse = 1 + Math.sin(t / 500 + i) * 0.06 * active;
-          nd.mesh.scale.setScalar(pulse);
-          nd.halo.scale.setScalar(1 + active * 0.6 + Math.sin(t / 700 + i) * 0.1 * active);
+          // The rig is squeezed on X for narrow screens, which would also
+          // squash these spheres into ellipses, so divide it back out. The
+          // extra factor just makes them less dominant on a small screen.
+          const nodeScale = canvas.clientWidth < 700 ? 0.55 : 1;
+          nd.mesh.scale.setScalar(pulse * nodeScale);
+          nd.mesh.scale.x = (pulse * nodeScale) / xs;
+          const haloS = (1 + active * 0.6 + Math.sin(t / 700 + i) * 0.1 * active) * nodeScale;
+          nd.halo.scale.setScalar(haloS);
+          nd.halo.scale.x = haloS / xs;
 
           const el = labelEls[i];
           if (!el) return;
-          const v = new THREE.Vector3(rawPts[i].x, rawPts[i].y + rig.position.y, rawPts[i].z).project(camera);
+          const v = new THREE.Vector3(rawPts[i].x * xs, rawPts[i].y + rig.position.y, rawPts[i].z).project(camera);
           const opacity = Math.max(0, Math.min(1, 2 - 2 * diff));
           if (v.z > 1 || v.z < -1 || opacity <= 0.01) { el.style.opacity = 0; return; }
-          let x = (v.x * 0.5 + 0.5) * canvas.clientWidth + (i % 2 === 0 ? -40 : 40);
+          const narrow = canvas.clientWidth < 700;
+          const nudge = narrow ? 14 : 40;
+          let x = (v.x * 0.5 + 0.5) * canvas.clientWidth + (i % 2 === 0 ? -nudge : nudge);
           let y = (-v.y * 0.5 + 0.5) * canvas.clientHeight + 30;
-          const labelW = 300, labelH = 140, margin = 24;
+          // A fixed 300px clamp on a 390px screen pinned both sides to the
+          // middle, which is what collapsed the left/right alternation.
+          const labelW = narrow ? Math.min(300, canvas.clientWidth * 0.44) : 300;
+          const labelH = narrow ? 120 : 140;
+          const margin = narrow ? 10 : 24;
           if (i % 2 === 0) x = Math.max(labelW + margin, x);
           else x = Math.min(canvas.clientWidth - labelW - margin, x);
           y = Math.min(canvas.clientHeight - labelH - margin, y);
@@ -267,7 +287,7 @@ function ExperienceJourney({ entries = [], accent = '#C4962A', bg = '#0A0908', t
         <div ref={speechRef} style={{ position: 'absolute', top: 0, left: 0, padding: '6px 10px', background: 'rgba(20,17,15,0.85)', border: '1px solid rgba(255,255,255,0.2)', borderRadius: 10, fontFamily: "'DM Mono', monospace", fontSize: '0.62rem', color: '#F5F0E8', whiteSpace: 'nowrap', pointerEvents: 'none', opacity: 0, transition: 'opacity 0.6s ease' }} />
         <div ref={labelsRef} style={{ position: 'absolute', inset: 0, pointerEvents: 'none' }}>
           {entries.map((e, i) => (
-            <div key={i} style={{ position: 'absolute', top: 0, left: 0, width: 300, maxWidth: '40vw', fontFamily: "'DM Mono', monospace", willChange: 'transform, opacity' }}>
+            <div key={i} className="exp-label" style={{ position: 'absolute', top: 0, left: 0, width: 300, maxWidth: '40vw', fontFamily: "'DM Mono', monospace", willChange: 'transform, opacity' }}>
               <div style={{ fontSize: '0.72rem', letterSpacing: '0.15em', textTransform: 'uppercase', color: accent, marginBottom: 6 }}>{e.tag}</div>
               <div style={{ fontSize: '0.78rem', color: metaColor, marginBottom: 8 }}>{e.year}</div>
               <div style={{ fontFamily: "'Playfair Display', serif", fontWeight: 700, fontSize: '1.4rem', color: titleColor, lineHeight: 1.25, marginBottom: 4 }}>{e.title}</div>

@@ -28,6 +28,7 @@ function UnfoldMenu({ items = [], onSelect, ink = '#0A0A0A', bg = '#FFFFFF', isD
   return (
     <div
       onMouseLeave={handleLeave}
+      className="unfold-menu"
       style={{ position: 'fixed', bottom: 28, right: 28, zIndex: 100, display: 'flex', flexDirection: 'column', alignItems: 'flex-end', gap: 14, paddingTop: 260, paddingLeft: 40, pointerEvents: open ? 'auto' : 'none' }}
     >
       {items.slice().reverse().map((it, ri) => {

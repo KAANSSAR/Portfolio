@@ -20,6 +20,13 @@ const CSS = `
 .fm-marquee__inner { display: flex; align-items: center; position: relative; height: 100%; width: fit-content; will-change: transform; }
 .fm-marquee__part { display: flex; align-items: center; flex-shrink: 0; }
 .fm-marquee span { white-space: nowrap; padding: 0 1vw; }
+.fm-visit { position: absolute; right: 8px; bottom: 8px; z-index: 6; pointer-events: auto;
+  display: inline-flex; align-items: center; gap: 4px; padding: 5px 9px; border-radius: 999px;
+  border: 1px solid currentColor; background: rgba(0,0,0,0.38); backdrop-filter: blur(6px);
+  -webkit-backdrop-filter: blur(6px); font-family: 'DM Mono', monospace; font-size: 0.48rem;
+  letter-spacing: 0.08em; text-transform: uppercase; text-decoration: none; font-weight: 500;
+  line-height: 1; white-space: nowrap; }
+.fm-visit:active { transform: scale(0.96); }
 .fm-marquee__img { width: 160px; height: 90px; margin: 0 2vw; border-radius: 4px; background-size: cover; background-position: 50% 50%; flex-shrink: 0; }
 @keyframes currencyFall { from { top: -15%; } to { top: 115%; } }
 `;
@@ -473,7 +480,7 @@ function skillColor(s) {
   return GLITCH_COLORS[h % GLITCH_COLORS.length];
 }
 
-function MenuItem({ link, text, image, num, tech, speed, textColor, techColor, marqueeBgColor, marqueeTextColor, borderColor, fontFamily, glitchMoney, matrixRain, tcsLogo, scanEffect, logoOnly, videoLoop, starfield, currencyRain, panelBg, panelTextColor }) {
+function MenuItem({ link, text, image, num, tech, speed, textColor, techColor, marqueeBgColor, marqueeTextColor, borderColor, fontFamily, glitchMoney, matrixRain, tcsLogo, scanEffect, logoOnly, videoLoop, starfield, currencyRain, panelBg, panelTextColor, isOpen = false, onToggle }) {
   const itemRef = useRef(null);
   const marqueeRef = useRef(null);
   const marqueeInnerRef = useRef(null);
@@ -482,9 +489,20 @@ function MenuItem({ link, text, image, num, tech, speed, textColor, techColor, m
   const [gsapReady, setGsapReady] = useState(false);
   const [repetitions, setRepetitions] = useState(4);
   const [imgTick, setImgTick] = useState(0);
+  // On touch devices there is no hover, so the panel is opened by tapping the
+  // row instead and a button inside it handles the link.
+  const [isTouch, setIsTouch] = useState(false);
   const animationDefaults = { duration: 0.6, ease: 'expo' };
 
   useEffect(() => { getGsap().then(g => { gsapRef.current = g; setGsapReady(true); }); }, []);
+
+  useEffect(() => {
+    const mq = window.matchMedia('(hover: none)');
+    const sync = () => setIsTouch(mq.matches);
+    sync();
+    mq.addEventListener('change', sync);
+    return () => mq.removeEventListener('change', sync);
+  }, []);
 
   const distMetric = (x, y, x2, y2) => (x - x2) * (x - x2) + (y - y2) * (y - y2);
   const findClosestEdge = (mouseX, mouseY, width, height) => {
@@ -544,10 +562,51 @@ function MenuItem({ link, text, image, num, tech, speed, textColor, techColor, m
     if (marqueeInnerRef.current) tl.to(marqueeInnerRef.current, { y: edge === 'top' ? '101%' : '-101%' }, 0);
   };
 
+  // Touch equivalents: always slide in from the bottom so the motion is
+  // predictable without a pointer position to read.
+  const slidePanel = (show) => {
+    const gsap = gsapRef.current;
+    if (!gsap || !marqueeRef.current) return;
+    const tl = gsap.timeline({ defaults: animationDefaults });
+    if (show) {
+      tl.set(marqueeRef.current, { y: '101%' }, 0);
+      if (marqueeInnerRef.current) tl.set(marqueeInnerRef.current, { y: '-101%' }, 0);
+      tl.to(marqueeRef.current, { y: '0%' }, 0);
+      if (marqueeInnerRef.current) tl.to(marqueeInnerRef.current, { y: '0%' }, 0);
+    } else {
+      tl.to(marqueeRef.current, { y: '101%' }, 0);
+      if (marqueeInnerRef.current) tl.to(marqueeInnerRef.current, { y: '-101%' }, 0);
+    }
+  };
+
+  const handleTap = (ev) => {
+    if (!isTouch) return;
+    // Let the in-panel button do its own thing.
+    if (ev.target.closest && ev.target.closest('.fm-visit')) return;
+    ev.preventDefault();
+    if (onToggle) onToggle();
+  };
+
+  // Drive the panel from the parent's open state so that opening one row
+  // closes whichever was open before. Skips the initial mount so nothing
+  // animates on first paint.
+  const didMountRef = useRef(false);
+  useEffect(() => {
+    if (!isTouch) return;
+    if (!didMountRef.current) { didMountRef.current = true; return; }
+    slidePanel(isOpen);
+  }, [isOpen, isTouch]);
+
   return (
     <li className="fm-menu__item" ref={itemRef} style={{ borderColor }}>
-      <a className="fm-menu__item-link" href={link || undefined} target={link ? '_blank' : undefined} rel="noopener noreferrer"
-         onMouseEnter={handleMouseEnter} onMouseLeave={handleMouseLeave} data-cursor-hover="true">
+      <a className="fm-menu__item-link" href={isTouch ? undefined : (link || undefined)}
+         target={!isTouch && link ? '_blank' : undefined} rel="noopener noreferrer"
+         role={isTouch ? 'button' : undefined}
+         aria-expanded={isTouch ? isOpen : undefined}
+         onClick={handleTap}
+         onMouseEnter={isTouch ? undefined : handleMouseEnter}
+         onMouseLeave={isTouch ? undefined : handleMouseLeave}
+         data-cursor-hover="true">
         <span style={{ display: 'flex', alignItems: 'baseline', gap: 24, minWidth: 0 }}>
           <span style={{ fontFamily: 'DM Mono, monospace', fontSize: '0.7rem', color: skillColor(num), opacity: 0.85 }}>{num}</span>
           <span style={{ fontFamily, fontWeight: 700, fontSize: 'clamp(1.3rem,2.6vw,2rem)', color: textColor }}>{text}</span>
@@ -583,6 +642,21 @@ function MenuItem({ link, text, image, num, tech, speed, textColor, techColor, m
             ))}
           </div>
         </div>
+        {isTouch && isOpen && link && (
+          <a
+            className="fm-visit"
+            href={link}
+            target="_blank"
+            rel="noopener noreferrer"
+            onClick={ev => ev.stopPropagation()}
+            style={{ color: panelTextColor || marqueeTextColor, borderColor: panelTextColor || marqueeTextColor }}
+          >
+            View project
+            <svg width="8" height="8" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+              <path d="M7 17 17 7M9 7h8v8" />
+            </svg>
+          </a>
+        )}
         {starfield && <StarfieldOverlay />}
         {currencyRain && <CurrencyRainOverlay />}
         {glitchMoney && <GlitchNoiseOverlay />}
@@ -595,12 +669,17 @@ function MenuItem({ link, text, image, num, tech, speed, textColor, techColor, m
 
 function FlowingMenu({ items = [], speed = 18, textColor = '#1A1612', techColor = '#8A7F72', bgColor = 'transparent', marqueeBgColor = '#C4962A', marqueeTextColor = '#F5F0E8', borderColor = 'rgba(26,22,18,0.12)', fontFamily = "'Playfair Display', serif" }) {
   useEffect(() => { injectCSS(); }, []);
+  // Which row is expanded on touch. Held here rather than per-item so opening
+  // one closes whichever was already open.
+  const [openIndex, setOpenIndex] = useState(null);
   return (
     <div className="fm-menu-wrap" style={{ backgroundColor: bgColor }}>
       <ul className="fm-menu">
         {items.map((item, idx) => (
           <MenuItem key={idx} {...item} speed={speed} textColor={textColor} techColor={techColor}
-            marqueeBgColor={marqueeBgColor} marqueeTextColor={marqueeTextColor} borderColor={borderColor} fontFamily={fontFamily} />
+            marqueeBgColor={marqueeBgColor} marqueeTextColor={marqueeTextColor} borderColor={borderColor} fontFamily={fontFamily}
+            isOpen={openIndex === idx}
+            onToggle={() => setOpenIndex(prev => (prev === idx ? null : idx))} />
         ))}
       </ul>
     </div>

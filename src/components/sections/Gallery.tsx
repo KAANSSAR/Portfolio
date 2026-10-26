@@ -27,7 +27,7 @@ export default function Gallery() {
   return (
     <section id="gallery" style={{ padding: '4.5rem 0' }}>
       <div style={{ maxWidth: 1200, margin: '0 auto', padding: '0 4rem' }}>
-        <div style={{ fontFamily: "'DM Mono', monospace", fontSize: '0.68rem', letterSpacing: '0.22em', textTransform: 'uppercase', display: 'flex', alignItems: 'center', gap: 16, marginBottom: 16, color: T.inkFaint }}>
+        <div className="sec-label" style={{ fontFamily: "'DM Mono', monospace", fontSize: '0.68rem', letterSpacing: '0.22em', textTransform: 'uppercase', display: 'flex', alignItems: 'center', gap: 16, marginBottom: 16, color: T.inkFaint }}>
           <span style={{ color: '#A78BFA' }}>Life</span>
           <span style={{ flex: 1, height: 1, maxWidth: 80, background: '#A78BFA', opacity: 0.4 }} />
         </div>

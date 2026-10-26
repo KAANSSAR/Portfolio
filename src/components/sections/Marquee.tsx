@@ -14,6 +14,7 @@ export default function Marquee() {
         {doubled.map((m, i) => (
           <span
             key={i}
+            className="marquee-item"
             style={{
               fontFamily: "'DM Mono', monospace", fontSize: '0.63rem', letterSpacing: '0.2em', textTransform: 'uppercase',
               color: 'rgba(255,255,255,0.4)', padding: '0 32px', display: 'inline-flex', alignItems: 'center', gap: 32,

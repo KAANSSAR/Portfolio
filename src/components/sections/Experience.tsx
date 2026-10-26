@@ -12,7 +12,7 @@ export default function Experience() {
 
   return (
     <section id="experience" style={{ maxWidth: 1200, margin: '0 auto', padding: '2.5rem 4rem 1.5rem' }}>
-      <div style={{ fontFamily: "'DM Mono', monospace", fontSize: '0.68rem', letterSpacing: '0.22em', textTransform: 'uppercase', display: 'flex', alignItems: 'center', gap: 16, marginBottom: 48, color: T.inkFaint }}>
+      <div className="sec-label" style={{ fontFamily: "'DM Mono', monospace", fontSize: '0.68rem', letterSpacing: '0.22em', textTransform: 'uppercase', display: 'flex', alignItems: 'center', gap: 16, marginBottom: 48, color: T.inkFaint }}>
         <span style={{ color: '#4ECDC4' }}>Experience</span>
         <span style={{ flex: 1, height: 1, maxWidth: 80, background: '#4ECDC4', opacity: 0.4 }} />
       </div>

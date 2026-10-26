@@ -51,10 +51,19 @@ function buildFlowingMenuItems() {
 export default function Projects() {
   const { T } = useTheme();
   const items = useMemo(() => buildFlowingMenuItems(), []);
+  // The hint said "hover", which is not a thing on a phone.
+  const [isTouch, setIsTouch] = React.useState(false);
+  React.useEffect(() => {
+    const mq = window.matchMedia('(hover: none)');
+    const sync = () => setIsTouch(mq.matches);
+    sync();
+    mq.addEventListener('change', sync);
+    return () => mq.removeEventListener('change', sync);
+  }, []);
 
   return (
     <section id="projects" style={{ maxWidth: 1200, margin: '-320px auto 0', padding: '0 4rem 4.5rem', position: 'relative' }}>
-      <div style={{ fontFamily: "'DM Mono', monospace", fontSize: '0.68rem', letterSpacing: '0.22em', textTransform: 'uppercase', display: 'flex', alignItems: 'center', gap: 16, marginBottom: 16, color: T.inkFaint }}>
+      <div className="sec-label" style={{ fontFamily: "'DM Mono', monospace", fontSize: '0.68rem', letterSpacing: '0.22em', textTransform: 'uppercase', display: 'flex', alignItems: 'center', gap: 16, marginBottom: 16, color: T.inkFaint }}>
         <span style={{ color: '#FFE66D' }}>Projects</span>
         <span style={{ flex: 1, height: 1, maxWidth: 80, background: '#FFE66D', opacity: 0.4 }} />
       </div>
@@ -62,10 +71,10 @@ export default function Projects() {
         What I&apos;ve built.
       </h2>
       <p style={{ fontFamily: "'DM Mono', monospace", fontSize: '0.65rem', letterSpacing: '0.1em', textTransform: 'uppercase', color: T.inkFaint, margin: '0 0 32px' }}>
-        Hover a row for the data view
+        {isTouch ? 'Tap a row for the data view' : 'Hover a row for the data view'}
       </p>
 
-      <div style={{ height: 640, borderTop: `0.5px solid ${T.line}` }}>
+      <div className="fm-menu-wrap-outer" style={{ height: 640, borderTop: `0.5px solid ${T.line}` }}>
         <FlowingMenu
           items={items}
           speed={18}

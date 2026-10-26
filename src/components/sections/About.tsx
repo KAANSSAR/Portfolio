@@ -62,12 +62,12 @@ export default function About() {
 
   return (
     <section id="about" ref={sectionRef} style={{ maxWidth: 1680, margin: '0 auto', padding: '4.5rem 1.5rem' }}>
-      <div style={{ fontFamily: "'DM Mono', monospace", fontSize: '0.68rem', letterSpacing: '0.22em', textTransform: 'uppercase', display: 'flex', alignItems: 'center', gap: 16, marginBottom: 48, color: T.inkFaint }}>
+      <div className="sec-label" style={{ fontFamily: "'DM Mono', monospace", fontSize: '0.68rem', letterSpacing: '0.22em', textTransform: 'uppercase', display: 'flex', alignItems: 'center', gap: 16, marginBottom: 48, color: T.inkFaint }}>
         <span style={{ color: '#FF6B6B' }}>About</span>
         <span style={{ flex: 1, height: 1, maxWidth: 80, background: '#FF6B6B', opacity: 0.4 }} />
       </div>
 
-      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 96, alignItems: 'start' }}>
+      <div className="resp-2col" style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 96, alignItems: 'start' }}>
         <div>
           <h2 style={{ fontFamily: "'Playfair Display', serif", fontWeight: 700, lineHeight: 1.02, letterSpacing: '-0.02em', fontSize: 'clamp(40px,6vw,84px)', margin: '0 0 40px', color: T.ink }}>
             Building things
@@ -87,6 +87,7 @@ export default function About() {
               return (
                 <span
                   key={s}
+                  className="skill-tag"
                   style={{
                     fontFamily: "'DM Mono', monospace", fontSize: '0.6rem', letterSpacing: '0.1em', textTransform: 'uppercase',
                     padding: '6px 12px', borderRadius: 2, border: `0.5px solid ${color}`, color,
@@ -103,10 +104,10 @@ export default function About() {
           <div style={{ borderTop: `0.5px solid ${T.line}` }}>
             {stats.map((st) => (
               <div key={st.label} style={{ display: 'flex', alignItems: 'baseline', gap: 24, padding: '26px 0', borderBottom: `0.5px solid ${T.line}` }}>
-                <div style={{ fontFamily: "'Playfair Display', serif", fontWeight: 700, lineHeight: 1, fontSize: '2.6rem', minWidth: 100, textAlign: 'center', color: T.ink }}>
+                <div className="stat-value" style={{ fontFamily: "'Playfair Display', serif", fontWeight: 700, lineHeight: 1, fontSize: '2.6rem', minWidth: 100, textAlign: 'center', color: T.ink }}>
                   {st.display}
                 </div>
-                <div style={{ fontSize: '0.82rem', lineHeight: 1.55, color: T.inkFaint }}>{st.label}</div>
+                <div className="stat-label" style={{ fontSize: '0.82rem', lineHeight: 1.55, color: T.inkFaint }}>{st.label}</div>
               </div>
             ))}
           </div>

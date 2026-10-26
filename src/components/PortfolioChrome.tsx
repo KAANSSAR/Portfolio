@@ -48,6 +48,7 @@ export default function PortfolioChrome() {
 
       {/* Floating Rubik's cube, fixed behind content while scrolling */}
       <div
+        className="cube-halo"
         style={{
           position: 'fixed', top: '78%', left: '12%', transform: 'translate(-50%,-50%)',
           width: 520, height: 520, zIndex: 0, pointerEvents: 'none',

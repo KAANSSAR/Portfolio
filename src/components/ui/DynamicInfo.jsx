@@ -41,13 +41,27 @@ function DynamicInfo({
     return () => clearInterval(id);
   }, []);
 
+  // Touch devices get no real hover, so tapping toggles instead. Guarded so
+  // desktop clicking doesn't fight the hover behaviour.
+  const [isTouch, setIsTouch] = useState(false);
+  useEffect(() => {
+    const mq = window.matchMedia('(hover: none)');
+    const sync = () => setIsTouch(mq.matches);
+    sync();
+    mq.addEventListener('change', sync);
+    return () => mq.removeEventListener('change', sync);
+  }, []);
+
   const handleEnter = () => { clearTimeout(closeTimer.current); setOpen(true); };
   const handleLeave = () => { closeTimer.current = setTimeout(() => setOpen(false), 250); };
 
   return (
     <div
-      onMouseEnter={handleEnter}
-      onMouseLeave={handleLeave}
+      className="dyn-notch"
+      data-open={open ? '1' : '0'}
+      onMouseEnter={isTouch ? undefined : handleEnter}
+      onMouseLeave={isTouch ? undefined : handleLeave}
+      onClick={isTouch ? () => { clearTimeout(closeTimer.current); setOpen(o => !o); } : undefined}
       style={{
         position: 'fixed', top: 0, left: '50%', transform: 'translateX(-50%)', zIndex: 200,
         background: '#0A0A0A', borderRadius: '0 0 18px 18px',

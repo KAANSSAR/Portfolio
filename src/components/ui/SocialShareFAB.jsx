@@ -52,6 +52,7 @@ function SocialShareFAB({ ink = '#0A0A0A', bg = '#FFFFFF', itemGap = 60, isDark 
     <div ref={wrapRef}
       onMouseEnter={() => setOpen(true)}
       onMouseLeave={() => setOpen(false)}
+      className="fab-share"
       style={{ position: 'fixed', bottom: 0, left: 28, zIndex: 100, width: itemGap * SOCIALS.length + 60, height: 60, pointerEvents: 'auto' }}
     >
       {SOCIALS.map((s, i) => {
