@@ -644,7 +644,13 @@ body[data-fullscreen-overlay='1'] .theme-toggle-wrap {
 .post-body figure.float { float: left; width: 42%; max-width: 330px; margin: 0.4em 1.8em 1.1em 0; }
 .post-body figure.float img { width: 100%; max-height: none; }
 .post-body h2, .post-body h3, .post-body .table-wrap, .post-body figure.wide { clear: both; }
-.post-body ul, .post-body ol { overflow: hidden; }
+/* card lists: inline bullets so the text flows beside and then under the photo */
+.post-body ul.inline { list-style: none; padding-left: 0; }
+.post-body ul.inline li { padding-left: 0; }
+.post-body ul.inline li::before {
+  content: ''; display: inline-block; width: 6px; height: 6px; border-radius: 50%;
+  background: var(--pb-accent); margin: 0 0.75em 0.15em 0; vertical-align: middle;
+}
 .post-body tr.group td {
   font-family: 'DM Mono', monospace; font-size: 0.64rem; letter-spacing: 0.12em; text-transform: uppercase;
   color: var(--pb-accent); background: var(--pb-head); padding-top: 14px; padding-bottom: 10px; font-weight: 500;
