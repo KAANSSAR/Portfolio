@@ -41,6 +41,15 @@ function TagPicker({ value, allTags, onChange, accentColor, line, ink, inkFaint 
   );
 }
 
+// "16 Nov 2026 · 9 min read" for cards and the reader header.
+function postMeta(p) {
+  const words = (p.body_html || '').replace(/<[^>]+>/g, ' ').split(/\s+/).filter(Boolean).length;
+  const mins = Math.max(1, Math.round(words / 230));
+  const d = p.created_at ? new Date(p.created_at) : null;
+  const date = d ? d.toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' }) : '';
+  return [date, `${mins} min read`].filter(Boolean).join(' \u00b7 ');
+}
+
 function PostCard({ p, accentColor, onClick, editMode }) {
   return (
     <div onClick={onClick} data-cursor-hover="true" style={{ flex: '0 0 300px', borderRadius: 10, overflow: 'hidden', border: editMode ? `1px dashed ${accentColor}` : '1px solid rgba(255,255,255,0.1)', background: '#141210', cursor: 'pointer' }}>
@@ -52,12 +61,18 @@ function PostCard({ p, accentColor, onClick, editMode }) {
           <span style={{ width: 6, height: 6, borderRadius: '50%', background: 'rgba(10,10,10,0.4)' }} />
         </span>
       </div>
-      <div style={{ padding: '26px 20px 24px' }}>
-        <div style={{ width: 44, height: 44, borderRadius: 8, background: 'rgba(255,255,255,0.06)', display: 'flex', alignItems: 'center', justifyContent: 'center', marginBottom: 20 }}>
+      {p.cover_image && (
+        <div style={{ aspectRatio: '16 / 9', overflow: 'hidden', background: 'rgba(255,255,255,0.06)' }}>
+          <img src={p.cover_image} alt="" loading="lazy" style={{ width: '100%', height: '100%', objectFit: 'cover', objectPosition: 'center 30%', display: 'block' }} />
+        </div>
+      )}
+      <div style={{ padding: p.cover_image ? '18px 20px 22px' : '26px 20px 24px' }}>
+        <div style={{ display: p.cover_image ? 'none' : 'flex', width: 44, height: 44, borderRadius: 8, background: 'rgba(255,255,255,0.06)', alignItems: 'center', justifyContent: 'center', marginBottom: 20 }}>
           <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke={accentColor} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M12 20h9M16.5 3.5a2.12 2.12 0 013 3L7 19l-4 1 1-4L16.5 3.5z" /></svg>
         </div>
         <div style={{ fontFamily: "'Playfair Display', serif", fontWeight: 700, fontSize: '1.05rem', color: '#F2EEE6', marginBottom: 10, lineHeight: 1.25 }}>{p.title}</div>
         <div style={{ fontFamily: "'DM Sans', sans-serif", fontSize: '0.78rem', color: '#8C8676', lineHeight: 1.5, display: '-webkit-box', WebkitLineClamp: 3, WebkitBoxOrient: 'vertical', overflow: 'hidden' }}>{p.summary}</div>
+        {p.body_html && <div style={{ marginTop: 14, fontFamily: "'DM Mono', monospace", fontSize: '0.6rem', letterSpacing: '0.08em', textTransform: 'uppercase', color: '#8C8676' }}>{postMeta(p)}</div>}
       </div>
     </div>
   );
@@ -70,7 +85,7 @@ function PostCarousel({ items, accentColor, onOpen, editMode }) {
     <div style={{ position: 'relative' }}>
       <span onClick={() => scrollBy(-1)} data-cursor-hover="true" className="carousel-arrow" style={{ position: 'absolute', left: -18, top: '50%', transform: 'translateY(-50%)', zIndex: 2, cursor: 'pointer', fontSize: '1.6rem', color: accentColor, background: '#141210', borderRadius: '50%', width: 34, height: 34, display: 'flex', alignItems: 'center', justifyContent: 'center', border: '1px solid rgba(255,255,255,0.1)' }}>‹</span>
       <div ref={scrollRef} className="carousel-track" style={{ display: 'flex', gap: 24, overflowX: 'auto', scrollSnapType: 'x mandatory', padding: '4px 2px 12px', scrollbarWidth: 'none' }}>
-        {items.map((p, i) => <div key={p.id || i} className="carousel-card" style={{ scrollSnapAlign: 'start' }}><PostCard p={p} accentColor={accentColor} onClick={() => onOpen(p)} editMode={editMode} /></div>)}
+        {items.map((p, i) => <div key={p.id || i} className="carousel-card" style={{ scrollSnapAlign: 'start', flex: '0 0 300px', display: 'flex' }}><PostCard p={p} accentColor={accentColor} onClick={() => onOpen(p)} editMode={editMode} /></div>)}
       </div>
       <span onClick={() => scrollBy(1)} data-cursor-hover="true" className="carousel-arrow" style={{ position: 'absolute', right: -18, top: '50%', transform: 'translateY(-50%)', zIndex: 2, cursor: 'pointer', fontSize: '1.6rem', color: accentColor, background: '#141210', borderRadius: '50%', width: 34, height: 34, display: 'flex', alignItems: 'center', justifyContent: 'center', border: '1px solid rgba(255,255,255,0.1)' }}>›</span>
     </div>
@@ -237,7 +252,9 @@ function BlogSection({
 
       {activePost && !editing && (
         <div style={{ position: 'fixed', inset: 0, zIndex: 300, background: bg, overflowY: 'auto' }}>
-          <div className="reader-body" style={{ maxWidth: 780, margin: '0 auto', padding: '80px 32px 120px' }}>
+          <div className="reader-body" style={{ maxWidth: 760, margin: '0 auto', padding: '80px 32px 120px',
+            '--pb-ink': ink, '--pb-muted': inkMuted, '--pb-faint': inkFaint, '--pb-line': line,
+            '--pb-head': `color-mix(in srgb, ${ink} 4%, transparent)`, '--pb-accent': labelColor }}>
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 40 }}>
               <span onClick={() => setActivePost(null)} data-cursor-hover="true" style={{ cursor: 'pointer', fontFamily: "'DM Mono', monospace", fontSize: '0.7rem', letterSpacing: '0.1em', textTransform: 'uppercase', color: inkFaint }}>← Back</span>
               {authed && (
@@ -249,13 +266,15 @@ function BlogSection({
             </div>
             {activePost.tags && activePost.tags.length > 0 && (
               <div style={{ display: 'flex', gap: 8, marginBottom: 20 }}>
-                {activePost.tags.map((t, ti) => <span key={ti} style={{ fontFamily: "'DM Mono', monospace", fontSize: '0.6rem', letterSpacing: '0.08em', textTransform: 'uppercase', padding: '4px 9px', border: `0.5px solid ${accentColor}`, borderRadius: 2, color: accentColor }}>{t}</span>)}
+                {activePost.tags.map((t, ti) => <span key={ti} style={{ fontFamily: "'DM Mono', monospace", fontSize: '0.6rem', letterSpacing: '0.08em', textTransform: 'uppercase', padding: '4px 9px', border: `0.5px solid ${labelColor}`, borderRadius: 2, color: labelColor }}>{t}</span>)}
               </div>
             )}
             <h1 style={{ fontFamily: "'Playfair Display', serif", fontWeight: 700, fontSize: 'clamp(32px,5vw,56px)', lineHeight: 1.1, color: ink, margin: '0 0 12px' }}>{activePost.title}</h1>
-            {activePost.subtitle && <div style={{ fontFamily: "'DM Mono', monospace", fontSize: '0.85rem', color: inkFaint, marginBottom: 32 }}>{activePost.subtitle}</div>}
-            {activePost.cover_image && <img src={activePost.cover_image} alt="" style={{ width: '100%', borderRadius: 8, marginBottom: 40 }} />}
-            <div style={{ fontFamily: "'DM Sans', sans-serif", fontSize: '1.05rem', lineHeight: 1.75, color: ink }} dangerouslySetInnerHTML={{ __html: activePost.body_html || '' }} />
+            {activePost.subtitle && <div style={{ fontFamily: "'DM Mono', monospace", fontSize: '0.85rem', color: inkFaint, marginBottom: 12 }}>{activePost.subtitle}</div>}
+            <div style={{ fontFamily: "'DM Mono', monospace", fontSize: '0.65rem', letterSpacing: '0.1em', textTransform: 'uppercase', color: inkFaint, margin: '8px 0 48px', paddingBottom: 28, borderBottom: `1px solid ${line}` }}>{postMeta(activePost)}</div>
+            {/* the cover doubles as the card thumbnail; skip it here if the article already shows it */}
+            {activePost.cover_image && !(activePost.body_html || '').includes(activePost.cover_image) && <img src={activePost.cover_image} alt="" style={{ width: '100%', borderRadius: 8, marginBottom: 40 }} />}
+            <div className="post-body" dangerouslySetInnerHTML={{ __html: activePost.body_html || '' }} />
           </div>
         </div>
       )}

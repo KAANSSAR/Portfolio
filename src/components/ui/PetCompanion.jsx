@@ -100,7 +100,10 @@ function PetCompanion({ spriteSrc = '/images/astronaut-pet-sprite.png', fallSrc 
         el.style.backgroundSize = `${bgSize}px ${bgSize}px`;
       }
 
-      const dx = mouse.x - pos.x, dy = mouse.y - pos.y;
+      // Measure from the sprite's centre, not its top-left corner. From the
+      // corner, the 48px sprite could stop right under the cursor, and since
+      // it's clickable now it would block hovers and clicks on the page.
+      const dx = mouse.x - (pos.x + s / 2), dy = mouse.y - (pos.y + s / 2);
       const dist = Math.hypot(dx, dy);
       moving = dist > IDLE_DIST;
       if (moving) {

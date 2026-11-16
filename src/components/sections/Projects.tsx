@@ -11,7 +11,7 @@ const FlowingMenu = dynamic(() => import('../ui/FlowingMenu'), { ssr: false });
 // Ported 1:1 from PROJECTS_RAW.map(...) in Portfolio Rebuild.dc.html's renderVals().
 const SPECIAL_PROJECT_NAMES = [
   'Stratum', 'Options Pricing Engine', 'Agentic AI · TCS Enterprise', 'CattleScanner',
-  'Shivam Brass · Site Redesign', 'Job Management App Refactor', 'Cardinal',
+  'Shivam Brass · Site Redesign', 'Job Management App Refactor', 'Cardinal', 'Honours Thesis',
 ];
 const DATA_VIEW_NAMES = new Set(SPECIAL_PROJECT_NAMES.slice(0, 4));
 
@@ -38,10 +38,12 @@ function buildFlowingMenuItems() {
       videoLoop: p.name === 'Cardinal' ? '/video/cardinal-wordmark-glitch.mp4' : undefined,
       starfield: false,
       currencyRain: p.name === 'Cardinal',
+      replanView: p.name === 'Honours Thesis',
       panelBg:
         p.name === 'Shivam Brass · Site Redesign' ? '#1F1810'
         : p.name === 'Job Management App Refactor' ? '#40296A'
         : p.name === 'Cardinal' ? '#000000'
+        : p.name === 'Honours Thesis' ? '#0A0A0A'
         : DATA_VIEW_NAMES.has(p.name) ? '#0A0A0A'
         : undefined,
       panelTextColor: SPECIAL_PROJECT_NAMES.includes(p.name) ? '#FFFFFF' : undefined,

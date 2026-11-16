@@ -482,7 +482,155 @@ function skillColor(s, isDark = true) {
   return accent(GLITCH_COLORS[h % GLITCH_COLORS.length], isDark);
 }
 
-function MenuItem({ link, text, image, num, tech, speed, textColor, techColor, marqueeBgColor, marqueeTextColor, borderColor, fontFamily, glitchMoney, matrixRain, tcsLogo, scanEffect, logoOnly, videoLoop, starfield, currencyRain, panelBg, panelTextColor, isOpen = false, onToggle }) {
+// Honours thesis data view: a degree plan across six semesters. One unit
+// gets a RETAKE, everything that depended on it slides a semester later,
+// then a sweep re-checks the plan and every unit turns green.
+const REPLAN_UNITS = [
+  // [code, col, row, shifts]  shifts = moves one semester right in the repair
+  ['ENGG1111', 0, 1, false],
+  ['INFO1110', 0, 0, false],
+  ['INFO1113', 1, 0, true],
+  ['MATH1021', 1, 1, false],
+  ['COMP2123', 2, 0, true],
+  ['SOFT2412', 2, 1, false],
+  ['COMP2017', 3, 0, true],
+  ['ELEC1601', 3, 1, false],
+  ['SOFT3888', 4, 0, true],
+  ['COMP3027', 4, 1, false],
+];
+const REPLAN_LOOP = 6400;
+
+function ReplanOverlay() {
+  const canvasRef = useRef(null);
+  useEffect(() => {
+    const canvas = canvasRef.current;
+    if (!canvas) return;
+    const ctx = canvas.getContext('2d');
+    let raf, destroyed = false, W = 0, H = 0, dpr = 1;
+    const t0 = performance.now();
+
+    function resize() {
+      dpr = Math.min(2, window.devicePixelRatio || 1);
+      W = canvas.clientWidth; H = canvas.clientHeight;
+      canvas.width = W * dpr; canvas.height = H * dpr;
+    }
+    resize();
+    window.addEventListener('resize', resize);
+
+    const ease = x => (x < 0 ? 0 : x > 1 ? 1 : x < 0.5 ? 4 * x * x * x : 1 - Math.pow(-2 * x + 2, 3) / 2);
+    const clamp01 = x => Math.max(0, Math.min(1, x));
+
+    function roundRect(x, y, w, h, r) {
+      ctx.beginPath();
+      ctx.moveTo(x + r, y); ctx.lineTo(x + w - r, y); ctx.quadraticCurveTo(x + w, y, x + w, y + r);
+      ctx.lineTo(x + w, y + h - r); ctx.quadraticCurveTo(x + w, y + h, x + w - r, y + h);
+      ctx.lineTo(x + r, y + h); ctx.quadraticCurveTo(x, y + h, x, y + h - r);
+      ctx.lineTo(x, y + r); ctx.quadraticCurveTo(x, y, x + r, y); ctx.closePath();
+    }
+
+    function draw(now) {
+      if (destroyed) return;
+      raf = requestAnimationFrame(draw);
+      const t = (now - t0) % REPLAN_LOOP;
+      ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+      ctx.clearRect(0, 0, W, H);
+
+      const cols = 6;
+      const padX = Math.max(10, W * 0.03), padY = 8;
+      const labelH = 13;
+      const gapX = Math.max(6, W * 0.012), gapY = 5;
+      const colW = (W - padX * 2 - gapX * (cols - 1)) / cols;
+      const tileH = (H - padY * 2 - labelH - gapY) / 2;
+      const fs = Math.max(7, Math.min(11, colW / 7.5));
+      const colX = c => padX + c * (colW + gapX);
+      const rowY = r => padY + labelH + r * (tileH + gapY);
+
+      // phases
+      const fadeIn = clamp01(t / 600);
+      const fail = clamp01((t - 700) / 500);        // RETAKE flag
+      const shift = ease((t - 1400) / 900);         // chain slides right
+      const sweepX = padX + (W - padX * 2) * clamp01((t - 2500) / 1000);
+      const sweeping = t > 2500;
+      const fadeOut = 1 - clamp01((t - 5700) / 600);
+      const alpha = fadeIn * fadeOut;
+
+      ctx.globalAlpha = alpha;
+      ctx.font = `${Math.max(7, fs - 1.5)}px 'DM Mono', monospace`;
+      ctx.textBaseline = 'middle';
+      ctx.textAlign = 'center';
+      for (let c = 0; c < cols; c++) {
+        ctx.fillStyle = 'rgba(255,255,255,0.35)';
+        ctx.fillText(`SEM ${c + 1}`, colX(c) + colW / 2, padY + labelH / 2 - 1);
+        // empty slot outlines
+        for (let r = 0; r < 2; r++) {
+          roundRect(colX(c), rowY(r), colW, tileH, 4);
+          ctx.strokeStyle = 'rgba(255,255,255,0.07)';
+          ctx.lineWidth = 1;
+          ctx.stroke();
+        }
+      }
+
+      const tiles = REPLAN_UNITS.map(([code, col, row, shifts]) => ({ code, x: colX(col + (shifts ? shift : 0)), y: rowY(row), shifts, failed: code === 'INFO1110' }));
+      // the retaken unit lands in semester 2 once the chain has moved
+      if (shift > 0) tiles.push({ code: 'INFO1110', x: colX(1), y: rowY(0), retake: true, appear: shift });
+
+      ctx.font = `${fs}px 'DM Mono', monospace`;
+      for (const tile of tiles) {
+        const checked = sweeping && sweepX > tile.x + colW * 0.5;
+        let stroke = 'rgba(255,255,255,0.45)', text = '#FFFFFF', fill = 'rgba(255,255,255,0.04)', label = tile.code;
+        let a = 1;
+        if (tile.failed) {
+          const flash = fail > 0 && fail < 1 ? (Math.sin(t / 45) > 0 ? 1 : 0.35) : 1;
+          if (fail > 0) {
+            stroke = `rgba(255,176,32,${0.9 * flash})`; text = '#FFB020'; fill = 'rgba(255,176,32,0.12)';
+            label = 'RETAKE';
+          }
+          if (shift >= 1) a = 0.45;
+        }
+        if (tile.retake) { a = tile.appear; }
+        if (checked && !tile.failed) { stroke = '#3DDC73'; fill = 'rgba(61,220,115,0.12)'; }
+        ctx.globalAlpha = alpha * a;
+        roundRect(tile.x, tile.y, colW, tileH, 4);
+        ctx.fillStyle = fill; ctx.fill();
+        ctx.strokeStyle = stroke; ctx.lineWidth = 1.2; ctx.stroke();
+        ctx.fillStyle = text;
+        ctx.fillText(label, tile.x + colW / 2 - (checked && !tile.failed ? fs * 0.5 : 0), tile.y + tileH / 2 + 0.5);
+        if (checked && !tile.failed) {
+          ctx.fillStyle = '#3DDC73';
+          ctx.fillText('✓', tile.x + colW - fs * 0.9, tile.y + tileH / 2 + 0.5);
+        }
+      }
+
+      // sweep line
+      if (sweeping && t < 3600) {
+        ctx.globalAlpha = alpha;
+        const g = ctx.createLinearGradient(sweepX - 40, 0, sweepX, 0);
+        g.addColorStop(0, 'rgba(61,220,115,0)'); g.addColorStop(1, 'rgba(61,220,115,0.25)');
+        ctx.fillStyle = g; ctx.fillRect(sweepX - 40, padY + labelH, 40, H - padY * 2 - labelH);
+        ctx.fillStyle = '#3DDC73'; ctx.fillRect(sweepX - 1, padY + labelH, 2, H - padY * 2 - labelH);
+      }
+
+      // status in the free slot of semester 6
+      ctx.globalAlpha = alpha;
+      ctx.textAlign = 'center';
+      const sx = colX(5) + colW / 2, sy = rowY(1) + tileH / 2;
+      ctx.font = `${Math.max(7, fs - 1.5)}px 'DM Mono', monospace`;
+      if (t > 3600) {
+        ctx.fillStyle = '#3DDC73';
+        ctx.fillText('PLAN VALID', sx, sy + 0.5);
+      } else if (t > 1400) {
+        ctx.fillStyle = 'rgba(255,255,255,0.5)';
+        ctx.fillText('REPLANNING', sx, sy + 0.5);
+      }
+      ctx.globalAlpha = 1;
+    }
+    raf = requestAnimationFrame(draw);
+    return () => { destroyed = true; cancelAnimationFrame(raf); window.removeEventListener('resize', resize); };
+  }, []);
+  return <canvas ref={canvasRef} style={{ position: 'absolute', inset: 0, width: '100%', height: '100%', pointerEvents: 'none', zIndex: 3 }} />;
+}
+
+function MenuItem({ link, text, image, num, tech, speed, textColor, techColor, marqueeBgColor, marqueeTextColor, borderColor, fontFamily, glitchMoney, matrixRain, tcsLogo, scanEffect, logoOnly, videoLoop, starfield, currencyRain, replanView, panelBg, panelTextColor, isOpen = false, onToggle }) {
   const { isDark } = useTheme();
   const itemRef = useRef(null);
   const marqueeRef = useRef(null);
@@ -492,6 +640,8 @@ function MenuItem({ link, text, image, num, tech, speed, textColor, techColor, m
   const [gsapReady, setGsapReady] = useState(false);
   const [repetitions, setRepetitions] = useState(4);
   const [imgTick, setImgTick] = useState(0);
+  // Restarts the thesis replan animation from the top each time the panel opens.
+  const [replanKey, setReplanKey] = useState(0);
   // On touch devices there is no hover, so the panel is opened by tapping the
   // row instead and a button inside it handles the link.
   const [isTouch, setIsTouch] = useState(false);
@@ -545,6 +695,7 @@ function MenuItem({ link, text, image, num, tech, speed, textColor, techColor, m
   }, [text, image, repetitions, speed, gsapReady, imgTick]);
 
   const handleMouseEnter = ev => {
+    if (replanView) setReplanKey(k => k + 1);
     const gsap = gsapRef.current;
     if (!gsap || !itemRef.current || !marqueeRef.current) return;
     const rect = itemRef.current.getBoundingClientRect();
@@ -584,6 +735,7 @@ function MenuItem({ link, text, image, num, tech, speed, textColor, techColor, m
 
   const handleTap = (ev) => {
     if (!isTouch) return;
+    if (replanView && !isOpen) setReplanKey(k => k + 1);
     // Let the in-panel button do its own thing.
     if (ev.target.closest && ev.target.closest('.fm-visit')) return;
     ev.preventDefault();
@@ -621,7 +773,7 @@ function MenuItem({ link, text, image, num, tech, speed, textColor, techColor, m
         </span>
       </a>
       <div className="fm-marquee" ref={marqueeRef} style={{ backgroundColor: panelBg || marqueeBgColor }}>
-        <div className="fm-marquee__inner-wrap" style={{ position: 'relative', zIndex: 2 }}>
+        <div className="fm-marquee__inner-wrap" style={{ position: 'relative', zIndex: 2, opacity: replanView ? 0 : 1 }}>
           <div className="fm-marquee__inner" ref={marqueeInnerRef} aria-hidden="true">
             {[...Array(repetitions)].map((_, idx) => (
               <div className="fm-marquee__part" key={idx} style={{ color: panelTextColor || marqueeTextColor }}>
@@ -665,6 +817,7 @@ function MenuItem({ link, text, image, num, tech, speed, textColor, techColor, m
         {glitchMoney && <GlitchNoiseOverlay />}
         {matrixRain && <MatrixRainOverlay />}
         {scanEffect && <ScannerOverlay containerRef={marqueeRef} />}
+        {replanView && <ReplanOverlay key={replanKey} />}
       </div>
     </li>
   );
