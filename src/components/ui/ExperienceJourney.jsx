@@ -2,6 +2,8 @@
 'use client';
 import React, { useState, useEffect, useRef, useCallback, useMemo } from 'react';
 import * as THREE from 'three';
+import { createPortal } from 'react-dom';
+import { useTheme } from '@/context/ThemeContext';
 
 const STEP_Y = 2.2;
 const PET_FRAME = 64, PET_SHEET = 256, PET_ROW_WALK = 2, PET_FRAMES = 4;
@@ -12,6 +14,102 @@ function buildCurvePoints(count) {
     pts.push({ x: side * 1.9, y: i * STEP_Y, z: Math.sin(i * 0.9) * 0.6 });
   }
   return pts;
+}
+
+// Detail card for one timeline entry, opened by clicking its node or label.
+function ExperienceDetail({ entries, index, onClose, onNav }) {
+  const { T, isDark } = useTheme();
+  const e = entries[index];
+  const cardRef = useRef(null);
+  useEffect(() => { cardRef.current?.focus({ preventScroll: true }); }, []);
+
+  useEffect(() => {
+    const onKey = ev => {
+      if (ev.key === 'Escape') onClose();
+      // Entries are stored newest-first, so "next" (later in time) is index - 1.
+      if (ev.key === 'ArrowRight') onNav(-1);
+      if (ev.key === 'ArrowLeft') onNav(1);
+    };
+    window.addEventListener('keydown', onKey);
+    const root = document.documentElement;
+    const prevOverflow = root.style.overflow;
+    root.style.overflow = 'hidden';
+    document.body.dataset.fullscreenOverlay = '1';
+    return () => {
+      window.removeEventListener('keydown', onKey);
+      root.style.overflow = prevOverflow;
+      document.body.dataset.fullscreenOverlay = '';
+    };
+  }, [onClose, onNav]);
+
+  if (!e) return null;
+  // Number them oldest to newest: the degree is 1, the latest role is n.
+  const pos = entries.length - index;
+  const mono = "'DM Mono', monospace";
+  const navBtn = (dir, label, disabled) => (
+    <button
+      onClick={() => !disabled && onNav(dir)}
+      disabled={disabled}
+      data-cursor-hover="true"
+      style={{
+        background: 'transparent', border: `1px solid ${T.line}`, borderRadius: 999, padding: '7px 14px',
+        fontFamily: mono, fontSize: '0.6rem', letterSpacing: '0.12em', textTransform: 'uppercase',
+        color: T.ink, opacity: disabled ? 0.3 : 1, cursor: disabled ? 'default' : 'pointer',
+      }}
+    >{label}</button>
+  );
+
+  return createPortal(
+    <div
+      onClick={onClose}
+      className="exp-detail-backdrop"
+      style={{
+        position: 'fixed', inset: 0, zIndex: 9000, display: 'flex', alignItems: 'center', justifyContent: 'center',
+        padding: 20, background: isDark ? 'rgba(0,0,0,0.55)' : 'rgba(40,30,15,0.25)',
+        backdropFilter: 'blur(6px)', WebkitBackdropFilter: 'blur(6px)',
+      }}
+    >
+      <div
+        ref={cardRef}
+        tabIndex={-1}
+        role="dialog"
+        aria-modal="true"
+        aria-label={e.title}
+        onClick={ev => ev.stopPropagation()}
+        className="exp-detail-card"
+        style={{
+          position: 'relative', width: '100%', maxWidth: 460, borderRadius: 20, padding: '30px 30px 24px',
+          background: isDark ? 'rgba(22,22,22,0.92)' : 'rgba(255,255,255,0.94)',
+          border: `1px solid ${isDark ? 'rgba(255,255,255,0.14)' : T.line}`,
+          boxShadow: isDark ? '0 24px 60px rgba(0,0,0,0.6)' : '0 24px 60px rgba(40,30,15,0.18)',
+          color: T.ink, outline: 'none',
+        }}
+      >
+        <button
+          onClick={onClose}
+          aria-label="Close"
+          data-cursor-hover="true"
+          style={{ position: 'absolute', top: 14, right: 14, width: 30, height: 30, borderRadius: '50%', border: `1px solid ${T.line}`, background: 'transparent', color: T.ink, cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center' }}
+        >
+          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.4" strokeLinecap="round"><path d="M6 6l12 12M18 6L6 18" /></svg>
+        </button>
+        <div style={{ fontFamily: mono, fontSize: '0.62rem', letterSpacing: '0.15em', textTransform: 'uppercase', color: T.inkFaint, marginBottom: 6, paddingRight: 36 }}>{e.tag}</div>
+        <div style={{ fontFamily: mono, fontSize: '0.7rem', color: T.inkFaint, marginBottom: 14 }}>{e.year}</div>
+        <div style={{ fontFamily: "'Playfair Display', serif", fontWeight: 700, fontSize: '1.45rem', lineHeight: 1.25, marginBottom: 6 }}>{e.title}</div>
+        <div style={{ fontFamily: mono, fontSize: '0.72rem', color: T.inkMuted, marginBottom: 18 }}>{e.company}</div>
+        <p style={{ fontSize: '0.92rem', lineHeight: 1.7, color: T.inkMuted, margin: '0 0 24px' }}>{e.desc}</p>
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', borderTop: `1px solid ${T.line}`, paddingTop: 16 }}>
+          {navBtn(1, 'Prev', pos <= 1)}
+          <span style={{ fontFamily: mono, fontSize: '0.6rem', color: T.inkFaint }}>{pos} / {entries.length}</span>
+          {navBtn(-1, 'Next', pos >= entries.length)}
+        </div>
+      </div>
+    </div>,
+    // Portal into the themed root, not <body>: the root is its own stacking
+    // context (isolation: isolate) and the custom cursor lives inside it, so a
+    // popup on <body> would sit above the cursor no matter its z-index.
+    document.getElementById('theme-root') || document.body
+  );
 }
 
 function ExperienceJourney({ entries = [], accent = '#C4962A', bg = '#0A0908', titleColor = '#F5F0E8', metaColor = 'rgba(255,255,255,0.5)' }) {
@@ -26,6 +124,10 @@ function ExperienceJourney({ entries = [], accent = '#C4962A', bg = '#0A0908', t
   const armLRef = useRef(null);
   const armRRef = useRef(null);
   const stateRef = useRef({ progress: 0 });
+  const hitsRef = useRef(null);
+  const [openIdx, setOpenIdx] = useState(null);
+  const closeDetail = useCallback(() => setOpenIdx(null), []);
+  const navDetail = useCallback(dir => setOpenIdx(i => (i == null ? i : Math.max(0, Math.min(entries.length - 1, i + dir)))), [entries.length]);
 
   useEffect(() => {
     let raf, renderer, destroyed = false, cleanupFns = [];
@@ -147,7 +249,7 @@ function ExperienceJourney({ entries = [], accent = '#C4962A', bg = '#0A0908', t
         }
       }
 
-      let lastProgress = null, walkClock = 0;
+      let lastProgress = null, walkClock = 0, climbDir = 1;
       function animate(t) {
         raf = requestAnimationFrame(animate);
         const progress = stateRef.current.progress;
@@ -162,7 +264,11 @@ function ExperienceJourney({ entries = [], accent = '#C4962A', bg = '#0A0908', t
         rig.position.y = -revIndex * STEP_Y;
         const curT = Math.max(0, Math.min(1, revIndex / (n - 1)));
         const curLocal = curve.getPoint(curT);
-        const scrollSpeed = lastProgress === null ? 0 : Math.abs(progress - lastProgress);
+        const scrollDelta = lastProgress === null ? 0 : progress - lastProgress;
+        const scrollSpeed = Math.abs(scrollDelta);
+        // Remember which way we last scrolled so the astronaut turns round
+        // when climbing back up the thread, and keeps that facing at rest.
+        if (scrollSpeed > 0.00003) climbDir = scrollDelta < 0 ? -1 : 1;
         lastProgress = progress;
         const isWalking = scrollSpeed > 0.00003;
         if (isWalking) walkClock += scrollSpeed * 7000;
@@ -179,7 +285,7 @@ function ExperienceJourney({ entries = [], accent = '#C4962A', bg = '#0A0908', t
             astroRef.current.style.backgroundSize = `${PET_SHEET * bgScale}px ${PET_SHEET * bgScale}px`;
             astroRef.current.style.backgroundPosition = `${-walkFrame * displaySize}px ${-(isWalking ? PET_ROW_WALK : 0) * displaySize}px`;
             const tangent = curve.getTangent(curT);
-            const facing = tangent.x >= 0 ? -1 : 1;
+            const facing = (tangent.x >= 0 ? -1 : 1) * climbDir;
             astroRef.current.style.transform = `translate(${ax}px, ${ay + bob}px) translate(-50%,-50%) scaleX(${facing})`;
             astroRef.current.style.opacity = '1';
             if (speechRef.current) {
@@ -217,6 +323,16 @@ function ExperienceJourney({ entries = [], accent = '#C4962A', bg = '#0A0908', t
           if (!el) return;
           const v = new THREE.Vector3(rawPts[i].x * xs, rawPts[i].y + rig.position.y, rawPts[i].z).project(camera);
           const opacity = Math.max(0, Math.min(1, 2 - 2 * diff));
+          // Clickable area over the node itself.
+          const hit = hitsRef.current ? hitsRef.current.children[i] : null;
+          const clickable = opacity > 0.5 && v.z <= 1 && v.z >= -1;
+          if (hit) {
+            const hx = (v.x * 0.5 + 0.5) * canvas.clientWidth;
+            const hy = (-v.y * 0.5 + 0.5) * canvas.clientHeight;
+            hit.style.transform = `translate(${hx}px, ${hy}px) translate(-50%, -50%)`;
+            hit.style.pointerEvents = clickable ? 'auto' : 'none';
+          }
+          el.style.pointerEvents = clickable ? 'auto' : 'none';
           if (v.z > 1 || v.z < -1 || opacity <= 0.01) { el.style.opacity = 0; return; }
           const narrow = canvas.clientWidth < 700;
           const nudge = narrow ? 14 : 40;
@@ -285,17 +401,31 @@ function ExperienceJourney({ entries = [], accent = '#C4962A', bg = '#0A0908', t
         <canvas ref={canvasRef} style={{ width: '100%', height: '100%', display: 'block' }} />
         <div ref={astroRef} style={{ position: 'absolute', top: 0, left: 0, width: 40, height: 40, pointerEvents: 'none', backgroundImage: "url('/images/astronaut-pet-sprite.png')", backgroundSize: '160px 160px', backgroundRepeat: 'no-repeat', imageRendering: 'pixelated', filter: 'drop-shadow(0 0 6px rgba(255,255,255,0.35))' }} />
         <div ref={speechRef} style={{ position: 'absolute', top: 0, left: 0, padding: '6px 10px', background: 'rgba(20,17,15,0.85)', border: '1px solid rgba(255,255,255,0.2)', borderRadius: 10, fontFamily: "'DM Mono', monospace", fontSize: '0.62rem', color: '#F5F0E8', whiteSpace: 'nowrap', pointerEvents: 'none', opacity: 0, transition: 'opacity 0.6s ease' }} />
+        <div ref={hitsRef} style={{ position: 'absolute', inset: 0, pointerEvents: 'none' }}>
+          {entries.map((e, i) => (
+            <button
+              key={i}
+              className="exp-node-hit"
+              aria-label={`More about ${e.title}`}
+              data-cursor-hover="true"
+              onClick={() => setOpenIdx(i)}
+              style={{ position: 'absolute', top: 0, left: 0, width: 72, height: 72, borderRadius: '50%', border: 'none', background: 'transparent', cursor: 'pointer', pointerEvents: 'none', padding: 0 }}
+            />
+          ))}
+        </div>
         <div ref={labelsRef} style={{ position: 'absolute', inset: 0, pointerEvents: 'none' }}>
           {entries.map((e, i) => (
-            <div key={i} className="exp-label" style={{ position: 'absolute', top: 0, left: 0, width: 300, maxWidth: '40vw', fontFamily: "'DM Mono', monospace", willChange: 'transform, opacity' }}>
+            <div key={i} className="exp-label" data-cursor-hover="true" onClick={() => setOpenIdx(i)} style={{ cursor: 'pointer', position: 'absolute', top: 0, left: 0, width: 300, maxWidth: '40vw', fontFamily: "'DM Mono', monospace", willChange: 'transform, opacity' }}>
               <div style={{ fontSize: '0.72rem', letterSpacing: '0.15em', textTransform: 'uppercase', color: accent, marginBottom: 6 }}>{e.tag}</div>
               <div style={{ fontSize: '0.78rem', color: metaColor, marginBottom: 8 }}>{e.year}</div>
               <div style={{ fontFamily: "'Playfair Display', serif", fontWeight: 700, fontSize: '1.4rem', color: titleColor, lineHeight: 1.25, marginBottom: 4 }}>{e.title}</div>
               <div style={{ fontSize: '0.8rem', color: metaColor }}>{e.company}</div>
+              <div className="exp-more" style={{ marginTop: 10, fontSize: '0.6rem', letterSpacing: '0.14em', textTransform: 'uppercase', color: titleColor, opacity: 0.6 }}>Details +</div>
             </div>
           ))}
         </div>
       </div>
+      {openIdx != null && <ExperienceDetail entries={entries} index={openIdx} onClose={closeDetail} onNav={navDetail} />}
     </div>
   );
 }

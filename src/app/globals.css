@@ -571,3 +571,17 @@ body[data-fullscreen-overlay='1'] .theme-toggle-wrap {
     max-width: 268px !important;
   }
 }
+
+/* Experience: clickable nodes and the detail popup */
+.exp-node-hit { color: inherit; transition: box-shadow 0.2s ease; }
+.exp-node-hit:hover, .exp-node-hit:focus-visible { box-shadow: 0 0 0 1.5px rgba(140, 140, 140, 0.7); outline: none; }
+.exp-label .exp-more { transition: opacity 0.2s ease; }
+.exp-label:hover .exp-more { opacity: 1 !important; }
+.exp-detail-backdrop { animation: expFadeIn 0.2s ease; }
+.exp-detail-card { animation: expPopIn 0.28s cubic-bezier(0.2, 0.9, 0.3, 1.2); }
+@keyframes expFadeIn { from { opacity: 0; } to { opacity: 1; } }
+@keyframes expPopIn { from { opacity: 0; transform: translateY(10px) scale(0.96); } to { opacity: 1; transform: none; } }
+@media (max-width: 520px) {
+  .exp-node-hit { width: 48px !important; height: 48px !important; }
+  .exp-detail-card { padding: 24px 20px 18px !important; }
+}

@@ -14,6 +14,7 @@ export default function ThemeRoot({ children }: { children: React.ReactNode }) {
   }, [isDark, T.bg]);
   return (
     <div
+      id="theme-root"
       style={{
         position: 'relative',
         minHeight: '100vh',

@@ -10,6 +10,14 @@ const ExperienceJourney = dynamic(() => import('../ui/ExperienceJourney'), { ssr
 
 export default function Experience() {
   const { T, isDark } = useTheme();
+  const [isTouch, setIsTouch] = React.useState(false);
+  React.useEffect(() => {
+    const mq = window.matchMedia('(hover: none)');
+    const sync = () => setIsTouch(mq.matches);
+    sync();
+    mq.addEventListener('change', sync);
+    return () => mq.removeEventListener('change', sync);
+  }, []);
 
   return (
     <section id="experience" style={{ maxWidth: 1200, margin: '0 auto', padding: '2.5rem 4rem 1.5rem' }}>
@@ -20,6 +28,9 @@ export default function Experience() {
       <h2 id="exp-heading" style={{ fontFamily: "'Playfair Display', serif", fontWeight: 700, lineHeight: 1.05, letterSpacing: '-0.02em', fontSize: 'clamp(36px,4.5vw,64px)', margin: '0 0 32px', color: T.ink }}>
         Where I&apos;ve been.
       </h2>
+      <p style={{ fontFamily: "'DM Mono', monospace", fontSize: '0.65rem', letterSpacing: '0.1em', textTransform: 'uppercase', color: T.inkFaint, margin: '-16px 0 32px' }}>
+        {isTouch ? 'Tap a node for details' : 'Click a node for details'}
+      </p>
 
       {/* ExperienceJourney manages its own scroll height (entries.length * 34vh)
           and internally pins/releases its canvas layer as you scroll through
