@@ -640,3 +640,15 @@ body[data-fullscreen-overlay='1'] .theme-toggle-wrap {
 }
 .post-body figure img { max-height: 640px; object-fit: contain; }
 .post-body figure:not(.wide) img { width: auto; max-width: 100%; margin: 0 auto; }
+/* Photo + text cards: the photo floats left and the text wraps around it */
+.post-body figure.float { float: left; width: 42%; max-width: 330px; margin: 0.4em 1.8em 1.1em 0; }
+.post-body figure.float img { width: 100%; max-height: none; }
+.post-body h2, .post-body h3, .post-body .table-wrap, .post-body figure.wide { clear: both; }
+.post-body ul, .post-body ol { overflow: hidden; }
+.post-body tr.group td {
+  font-family: 'DM Mono', monospace; font-size: 0.64rem; letter-spacing: 0.12em; text-transform: uppercase;
+  color: var(--pb-accent); background: var(--pb-head); padding-top: 14px; padding-bottom: 10px; font-weight: 500;
+}
+@media (max-width: 600px) {
+  .post-body figure.float { float: none; width: 100%; max-width: 100%; margin: 1.6em 0; }
+}
