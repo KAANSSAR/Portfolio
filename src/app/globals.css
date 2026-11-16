@@ -22,7 +22,7 @@ body {
 }
 
 /* Custom canvas cursor only replaces the native one on devices with a real
-   pointer — on touch devices the native cursor (i.e. no cursor) stays put. */
+   pointer, on touch devices the native cursor (i.e. no cursor) stays put. */
 html.has-fine-pointer,
 html.has-fine-pointer body,
 html.has-fine-pointer input,
@@ -133,7 +133,7 @@ body[data-fullscreen-overlay='1'] .theme-toggle-wrap {
     left: 50% !important;
     width: 300px !important;
     height: 300px !important;
-    opacity: 0.55;
+    opacity: 0.85;
   }
 
   .hero-player {
@@ -506,7 +506,7 @@ body[data-fullscreen-overlay='1'] .theme-toggle-wrap {
     margin-right: auto;
   }
 
-  /* Location line and the "Currently —" row are flex rows. */
+  /* Location line and the "Currently:" row are flex rows. */
   .hero-location {
     justify-content: center !important;
     flex-wrap: wrap;

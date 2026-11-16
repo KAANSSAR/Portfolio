@@ -1,5 +1,6 @@
 // @ts-nocheck -- ported design-tool component; kept as loosely-typed JS on purpose.
 'use client';
+import { accent } from '@/lib/accent';
 import React, { useState, useEffect, useRef, useCallback, useMemo } from 'react';
 
 const SECTION_COLORS = { About: '#FF6B6B', Experience: '#4ECDC4', Projects: '#FFE66D', 'Quant Lab': '#F5C518', Blog: '#4ECDC4', Life: '#A78BFA', Contact: '#FF8C42', Home: '#5FD068' };
@@ -19,8 +20,8 @@ function UnfoldMenu({ items = [], onSelect, ink = '#0A0A0A', bg = '#FFFFFF', isD
   const closeTimer = useRef(null);
   const glass = isDark
     ? { background: 'rgba(120,120,120,0.22)', backdropFilter: 'blur(14px) saturate(1.4) brightness(1.15)', WebkitBackdropFilter: 'blur(14px) saturate(1.4) brightness(1.15)', border: '1px solid rgba(255,255,255,0.22)' }
-    : { background: 'rgba(15,15,15,0.55)', backdropFilter: 'blur(14px) saturate(1.2) brightness(0.9)', WebkitBackdropFilter: 'blur(14px) saturate(1.2) brightness(0.9)', border: '1px solid rgba(255,255,255,0.12)' };
-  const content = isDark ? ink : '#FFFFFF';
+    : { background: 'rgba(255,255,255,0.72)', backdropFilter: 'blur(14px) saturate(1.6)', WebkitBackdropFilter: 'blur(14px) saturate(1.6)', border: '1px solid rgba(20,16,10,0.10)' };
+  const content = ink;
 
   const handleEnter = () => setOpen(true);
   const handleLeave = () => setOpen(false);
@@ -42,7 +43,7 @@ function UnfoldMenu({ items = [], onSelect, ink = '#0A0A0A', bg = '#FFFFFF', isD
             onMouseLeave={e => { e.currentTarget.style.transform = e.currentTarget.style.transform.replace(/scale\([^)]*\)/, 'scale(1)'); }}
             style={{
               display: 'flex', alignItems: 'center', gap: 10, padding: '10px 20px 10px 12px', borderRadius: 999,
-              ...glass, boxShadow: '0 8px 20px rgba(0,0,0,0.25)', cursor: 'pointer',
+              ...glass, boxShadow: isDark ? '0 8px 20px rgba(0,0,0,0.25)' : '0 8px 22px rgba(40,30,15,0.12)', cursor: 'pointer',
               transform: open ? `translate(-${shift}px, 0) rotate(${rot}deg) scale(1)` : 'translate(0,12px) rotate(0deg) scale(0.6)',
               opacity: open ? 1 : 0,
               transformOrigin: 'right center',
@@ -50,8 +51,8 @@ function UnfoldMenu({ items = [], onSelect, ink = '#0A0A0A', bg = '#FFFFFF', isD
               pointerEvents: open ? 'auto' : 'none',
             }}
           >
-            <svg width="18" height="18" viewBox="0 0 24 24" fill={SECTION_COLORS[it.label] || content}><path d={ICONS[it.label] || ICONS.About} /></svg>
-            <span style={{ fontFamily: "'Playfair Display', serif", fontWeight: 700, fontSize: '1rem', color: SECTION_COLORS[it.label] || content, whiteSpace: 'nowrap' }}>{it.label}</span>
+            <svg width="18" height="18" viewBox="0 0 24 24" fill={SECTION_COLORS[it.label] ? accent(SECTION_COLORS[it.label], isDark) : content}><path d={ICONS[it.label] || ICONS.About} /></svg>
+            <span style={{ fontFamily: "'Playfair Display', serif", fontWeight: 700, fontSize: '1rem', color: SECTION_COLORS[it.label] ? accent(SECTION_COLORS[it.label], isDark) : content, whiteSpace: 'nowrap' }}>{it.label}</span>
           </div>
         );
       })}
@@ -62,7 +63,7 @@ function UnfoldMenu({ items = [], onSelect, ink = '#0A0A0A', bg = '#FFFFFF', isD
         aria-label="Menu"
         style={{
           width: 56, height: 56, borderRadius: '50%', ...glass,
-          boxShadow: '0 8px 20px rgba(0,0,0,0.25)', cursor: 'pointer', pointerEvents: 'auto',
+          boxShadow: isDark ? '0 8px 20px rgba(0,0,0,0.25)' : '0 8px 22px rgba(40,30,15,0.12)', cursor: 'pointer', pointerEvents: 'auto',
           display: 'flex', alignItems: 'center', justifyContent: 'center',
         }}
       >

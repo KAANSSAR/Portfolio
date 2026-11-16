@@ -42,30 +42,52 @@ function hexAlpha(hex, fallback) {
 // --- end ported ---
 
 const MARKER_LOCATIONS = [
-  { name: 'Kolkata', lat: 22.5726, lon: 88.3639, color: '#FF6B6B', colorLight: '#B33F3F' },
-  { name: 'Jamnagar', lat: 22.4707, lon: 70.0577, color: '#FFE66D', colorLight: '#A88516' },
+  { name: 'Kolkata', lat: 22.5726, lon: 88.3639, color: '#FF6B6B', colorLight: '#B33F3F', labelAt: [-0.08, 0.5] },
+  { name: 'Jamnagar', lat: 22.4707, lon: 70.0577, color: '#FFE66D', colorLight: '#A88516', labelAt: [1.08, 0.5] },
   { name: 'Bangalore', lat: 12.9716, lon: 77.5946, color: '#FF8C42', colorLight: '#B85A17' },
   { name: 'Singapore', lat: 1.3521, lon: 103.8198, color: '#4ECDC4', colorLight: '#1F8A80' },
   { name: 'Sydney', lat: -33.8688, lon: 151.2093, color: '#A78BFA', colorLight: '#6A4CD1' },
 ];
 
-function makeLabelSprite(THREE, text, color) {
+function makeLabelSprite(THREE, text, color, lightMode) {
+  // Labels sit on a small pill so they stay readable over the dot field.
   const canvas = document.createElement('canvas');
   const ctx = canvas.getContext('2d');
   const fontSize = 42;
+  const padX = 22, padY = 12;
   ctx.font = `800 ${fontSize}px 'DM Mono', monospace`;
-  const w = Math.ceil(ctx.measureText(text).width) + 24;
-  canvas.width = w; canvas.height = fontSize * 1.6;
+  const textW = Math.ceil(ctx.measureText(text).width);
+  canvas.width = textW + padX * 2;
+  canvas.height = fontSize + padY * 2;
+  const r = canvas.height / 2;
+  ctx.beginPath();
+  ctx.moveTo(r, 0); ctx.lineTo(canvas.width - r, 0);
+  ctx.arc(canvas.width - r, r, r, -Math.PI / 2, Math.PI / 2);
+  ctx.lineTo(r, canvas.height);
+  ctx.arc(r, r, r, Math.PI / 2, Math.PI * 1.5);
+  ctx.closePath();
+  // Light theme: solid pill in the city colour with white text.
+  // Dark theme: dark pill with coloured text and a coloured edge.
+  ctx.fillStyle = lightMode ? color : 'rgba(10,10,10,0.8)';
+  ctx.fill();
+  if (!lightMode) {
+    ctx.lineWidth = 3;
+    ctx.strokeStyle = color;
+    ctx.globalAlpha = 0.6;
+    ctx.stroke();
+    ctx.globalAlpha = 1;
+  }
   ctx.font = `800 ${fontSize}px 'DM Mono', monospace`;
-  ctx.fillStyle = color;
+  ctx.fillStyle = lightMode ? '#FFFFFF' : color;
   ctx.textBaseline = 'middle';
-  ctx.fillText(text, 12, canvas.height / 2);
+  ctx.fillText(text, padX, canvas.height / 2 + 2);
   const tex = new THREE.CanvasTexture(canvas);
   tex.minFilter = THREE.LinearFilter;
   const mat = new THREE.SpriteMaterial({ map: tex, transparent: true, depthWrite: false });
   const sprite = new THREE.Sprite(mat);
   const scale = 0.0022;
   sprite.scale.set(canvas.width * scale, canvas.height * scale, 1);
+  sprite.renderOrder = 10;
   return sprite;
 }
 
@@ -120,8 +142,10 @@ function OrbitDotGlobe({ autoRotate = true, rotationSpeed = 0.002, radius = 2, d
           });
           return new THREE.Points(geo, mat);
         };
-        group.add(buildPoints(land, landColor, 0.045, 0.9));
-        group.add(buildPoints(ocean, oceanColor, 0.032, 0.35));
+        // Dark dots on paper read lighter than white dots on black, so the light
+        // theme gets slightly bigger dots to keep the globe at the same weight.
+        group.add(buildPoints(land, landColor, lightMode ? 0.056 : 0.045, 0.9));
+        group.add(buildPoints(ocean, oceanColor, lightMode ? 0.038 : 0.032, 0.35));
 
         const markerGroup = new THREE.Group();
         MARKER_LOCATIONS.forEach(loc => {
@@ -141,8 +165,15 @@ function OrbitDotGlobe({ autoRotate = true, rotationSpeed = 0.002, radius = 2, d
           halo.userData.isMarkerHalo = true;
           const len = Math.hypot(x, y, z) || 1;
           const nx = x / len, ny = y / len, nz = z / len;
-          const label = makeLabelSprite(THREE, loc.name, markerHex);
-          label.position.set(x + nx * 0.06, y + ny * 0.06 - 0.16, z + nz * 0.06);
+          const label = makeLabelSprite(THREE, loc.name, markerHex, lightMode);
+          // sprite.center anchors the label relative to the marker in screen space,
+          // so close cities (Kolkata / Jamnagar) can sit on opposite sides.
+          const [cx, cy] = loc.labelAt || [0.5, 1.45];
+          label.center.set(cx, cy);
+          label.position.set(x + nx * 0.08, y + ny * 0.08, z + nz * 0.08);
+          core.userData.isMarkerPart = true;
+          halo.userData.isMarkerPart = true;
+          label.userData.isMarkerLabel = true;
           markerGroup.add(core, halo, label);
         });
         group.add(markerGroup);
@@ -167,6 +198,7 @@ function OrbitDotGlobe({ autoRotate = true, rotationSpeed = 0.002, radius = 2, d
       window.addEventListener('pointerup', onUp);
       container.style.cursor = 'grab';
 
+      const _wp = new THREE.Vector3();
       function animate() {
         raf = requestAnimationFrame(animate);
         if (!dragging) {
@@ -177,8 +209,19 @@ function OrbitDotGlobe({ autoRotate = true, rotationSpeed = 0.002, radius = 2, d
         const t = performance.now() * 0.002;
         const pulse = 1 + Math.sin(t) * 0.35;
         if (window.__globeMarkers) {
+          // The dot globe is see-through, so cities on the far side used to
+          // show through it (mirrored). Fade markers and labels out as they
+          // turn away from the camera.
           window.__globeMarkers.children.forEach(m => {
             if (m.userData.isMarkerHalo) m.scale.setScalar(pulse);
+            m.getWorldPosition(_wp);
+            const facing = _wp.z / numRadius;
+            if (m.userData.isMarkerLabel) {
+              m.material.opacity = Math.max(0, Math.min(1, (facing - 0.1) / 0.25));
+              m.visible = m.material.opacity > 0.01;
+            } else if (m.userData.isMarkerPart) {
+              m.visible = facing > 0;
+            }
           });
         }
         renderer.render(scene, camera);

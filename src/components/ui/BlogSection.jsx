@@ -3,7 +3,8 @@
 import React, { useState, useEffect, useRef, useCallback, useMemo } from 'react';
 
 import { getSb } from '@/lib/supabaseClient';
-// No client-side password here on purpose — the editor gate is checked
+import { noEmDash } from '@/lib/noEmDash';
+// No client-side password here on purpose, the editor gate is checked
 // server-side via /api/editor/login, which is the only place that ever
 // sees BLOG_EDITOR_PASSWORD. See src/lib/editorSession.ts.
 
@@ -81,6 +82,7 @@ function BlogSection({
   sectionLabel = 'Blog',
   heading = 'Notes & Writing',
   accentColor = '#FF6B6B',
+  labelColor = accentColor,
   ink = '#0A0A0A',
   inkFaint = '#8C8C8C',
   inkMuted = '#4D4D4D',
@@ -111,7 +113,7 @@ function BlogSection({
     if (!sb) return;
     setLoading(true);
     sb.from('posts').select('*').eq('category', category).eq('published', true).order('created_at', { ascending: false })
-      .then(({ data, error }) => { setLoading(false); if (!error && data) setPosts(data); });
+      .then(({ data, error }) => { setLoading(false); if (!error && data) setPosts(noEmDash(data)); });
   }, [category]);
   const allTags = Array.from(new Set(posts.flatMap(p => p.tags || [])));
   const filteredPosts = activeTag ? posts.filter(p => (p.tags || []).includes(activeTag)) : posts;
@@ -119,7 +121,7 @@ function BlogSection({
   useEffect(() => { if (ready) fetchPosts(); }, [ready, fetchPosts]);
 
   // Restore editor auth state from the httpOnly session cookie (the cookie
-  // itself is unreadable from JS — this just asks the server if it's valid).
+  // itself is unreadable from JS, this just asks the server if it's valid).
   useEffect(() => {
     fetch('/api/editor/status').then(r => r.json()).then(d => setAuthed(!!d.authed)).catch(() => {});
   }, []);
@@ -193,13 +195,13 @@ function BlogSection({
   return (
     <div>
       <div className="sec-label" style={{ fontFamily: "'DM Mono', monospace", fontSize: '0.68rem', letterSpacing: '0.22em', textTransform: 'uppercase', display: 'flex', alignItems: 'center', gap: 16, marginBottom: 16, color: inkFaint }}>
-        <span style={{ color: accentColor }}>{sectionLabel}</span>
-        <span style={{ flex: 1, height: 1, maxWidth: 80, background: accentColor, opacity: 0.4 }} />
-        <span onClick={() => authed && setEditMode(m => !m)} data-cursor-hover="true" style={{ cursor: authed ? 'pointer' : 'default', color: editMode ? accentColor : inkFaint, opacity: authed ? 1 : 0.4 }}>Edit</span>
-        <span onClick={() => authed ? openNew() : setPwPrompt(true)} data-cursor-hover="true" style={{ cursor: 'pointer', color: authed ? accentColor : inkFaint, opacity: authed ? 1 : 0.4 }}>New</span>
-        <span onClick={() => authed ? lockEditor() : setPwPrompt(true)} data-cursor-hover="true" style={{ cursor: 'pointer', display: 'flex', alignItems: 'center' }} title={authed ? 'Unlocked — click to lock' : 'Locked — click to unlock'}>
+        <span style={{ color: labelColor }}>{sectionLabel}</span>
+        <span style={{ flex: 1, height: 1, maxWidth: 80, background: labelColor, opacity: 0.4 }} />
+        <span onClick={() => authed && setEditMode(m => !m)} data-cursor-hover="true" style={{ cursor: authed ? 'pointer' : 'default', color: editMode ? labelColor : inkFaint, opacity: authed ? 1 : 0.4 }}>Edit</span>
+        <span onClick={() => authed ? openNew() : setPwPrompt(true)} data-cursor-hover="true" style={{ cursor: 'pointer', color: authed ? labelColor : inkFaint, opacity: authed ? 1 : 0.4 }}>New</span>
+        <span onClick={() => authed ? lockEditor() : setPwPrompt(true)} data-cursor-hover="true" style={{ cursor: 'pointer', display: 'flex', alignItems: 'center' }} title={authed ? 'Unlocked, click to lock' : 'Locked, click to unlock'}>
           {authed ? (
-            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke={accentColor} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect x="4" y="11" width="16" height="10" rx="2" /><path d="M8 11V7a4 4 0 017.75-1.5" /></svg>
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke={labelColor} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect x="4" y="11" width="16" height="10" rx="2" /><path d="M8 11V7a4 4 0 017.75-1.5" /></svg>
           ) : (
             <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke={inkFaint} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect x="4" y="11" width="16" height="10" rx="2" /><path d="M8 11V7a4 4 0 018 0" /></svg>
           )}

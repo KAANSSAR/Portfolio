@@ -1,5 +1,7 @@
 // @ts-nocheck -- ported design-tool component; kept as loosely-typed JS on purpose.
 'use client';
+import { useTheme } from '@/context/ThemeContext';
+import { accent } from '@/lib/accent';
 import React, { useState, useEffect, useRef, useCallback, useMemo } from 'react';
 
 const GREEK = 'ΑΒΓΔΕΖΗΘΙΚΛΜΝΞΟΠΡΣΤΥΦΧΨΩαβγδεζηθικλμνξοπρστυφχψω';
@@ -11,6 +13,7 @@ function randChar() { return POOL[Math.floor(Math.random() * POOL.length)]; }
 function randColor() { return COLORS[Math.floor(Math.random() * COLORS.length)]; }
 
 function GlitchText({ words = [], holdDuration = 2200, glitchDuration = 650, textStyle = {} }) {
+  const { isDark } = useTheme();
   const [display, setDisplay] = useState(() => (words[0] || '').split('').map(c => ({ char: c, color: null })));
   const wordIndexRef = useRef(0);
 
@@ -44,7 +47,7 @@ function GlitchText({ words = [], holdDuration = 2200, glitchDuration = 650, tex
   return (
     <span style={{ display: 'inline-flex', ...textStyle }}>
       {display.map((c, i) => (
-        <span key={i} style={{ color: c.color || textStyle.color, whiteSpace: 'pre' }}>{c.char}</span>
+        <span key={i} style={{ color: c.color ? accent(c.color, isDark) : textStyle.color, whiteSpace: 'pre' }}>{c.char}</span>
       ))}
     </span>
   );

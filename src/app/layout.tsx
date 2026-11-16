@@ -12,7 +12,7 @@ export const viewport: Viewport = {
 };
 
 export const metadata: Metadata = {
-  title: `${SITE.name} — Software Engineer`,
+  title: `${SITE.name} | Software Engineer`,
   description:
     'Final-year Software Engineering (Honours) student at the University of Sydney, building agentic AI systems and quantitative finance tools.',
 };

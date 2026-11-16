@@ -68,12 +68,16 @@ export default function HeroNameCanvas() {
     let raf = 0;
     const draw = () => {
       ctx.clearRect(0, 0, W, H);
-      ctx.fillStyle = isDarkRef.current ? '#FFFFFF' : '#0A0A0A';
+      const dark = isDarkRef.current;
+      ctx.fillStyle = dark ? '#FFFFFF' : '#121110';
+      // Light dots on black read brighter than dark dots on paper, so the
+      // light theme uses slightly bigger dots to keep the same weight.
+      const sz = dark ? 2 : 2.6;
       for (let i = 0; i < particles.length; i++) {
         const p = particles[i];
         p.x += (p.tx - p.x) * 0.1;
         p.y += (p.ty - p.y) * 0.1;
-        ctx.fillRect(p.x, p.y, 2, 2);
+        ctx.fillRect(p.x, p.y, sz, sz);
       }
       raf = requestAnimationFrame(draw);
     };

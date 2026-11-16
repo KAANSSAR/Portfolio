@@ -7,7 +7,7 @@ export const EDITOR_COOKIE_MAX_AGE = SESSION_TTL_MS / 1000;
 function getSecret(): string {
   const secret = process.env.BLOG_SESSION_SECRET;
   if (!secret) {
-    throw new Error('BLOG_SESSION_SECRET is not set — see .env.local.example.');
+    throw new Error('BLOG_SESSION_SECRET is not set, see .env.local.example.');
   }
   return secret;
 }

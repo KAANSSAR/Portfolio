@@ -10,7 +10,7 @@ function ThemeChanger({ isDark = false, onToggle, ink = '#0A0A0A', bg = '#FFFFFF
       aria-label="Toggle theme"
       style={{
         position: 'fixed', top: 35, right: 88, zIndex: 100, width: 64, height: 34, borderRadius: 999,
-        border: `1px solid ${ink}33`, background: isDark ? ink : `${ink}0d`, cursor: 'pointer', padding: 3,
+        border: `1px solid ${ink}33`, background: ink, cursor: 'pointer', padding: 3,
         display: 'flex', alignItems: 'center', justifyContent: isDark ? 'flex-end' : 'flex-start',
         transition: 'background .35s ease, justify-content .35s ease', boxShadow: '0 4px 12px rgba(0,0,0,0.1)',
       }}

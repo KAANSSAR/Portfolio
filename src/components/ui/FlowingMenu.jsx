@@ -2,6 +2,8 @@
 'use client';
 import React, { useState, useEffect, useRef, useCallback, useMemo } from 'react';
 import { gsap } from 'gsap';
+import { useTheme } from '@/context/ThemeContext';
+import { accent } from '@/lib/accent';
 
 let __fmGsapPromise = null;
 function getGsap() {
@@ -474,13 +476,14 @@ function KeyedVideo({ src, height, margin }) {
 }
 
 const GLITCH_COLORS = ['#FF6B6B', '#4ECDC4', '#FFE66D', '#A78BFA', '#FF8C42', '#5FD068', '#FF5DA2'];
-function skillColor(s) {
+function skillColor(s, isDark = true) {
   let h = 0;
   for (let i = 0; i < s.length; i++) h = (h * 31 + s.charCodeAt(i)) >>> 0;
-  return GLITCH_COLORS[h % GLITCH_COLORS.length];
+  return accent(GLITCH_COLORS[h % GLITCH_COLORS.length], isDark);
 }
 
 function MenuItem({ link, text, image, num, tech, speed, textColor, techColor, marqueeBgColor, marqueeTextColor, borderColor, fontFamily, glitchMoney, matrixRain, tcsLogo, scanEffect, logoOnly, videoLoop, starfield, currencyRain, panelBg, panelTextColor, isOpen = false, onToggle }) {
+  const { isDark } = useTheme();
   const itemRef = useRef(null);
   const marqueeRef = useRef(null);
   const marqueeInnerRef = useRef(null);
@@ -608,12 +611,12 @@ function MenuItem({ link, text, image, num, tech, speed, textColor, techColor, m
          onMouseLeave={isTouch ? undefined : handleMouseLeave}
          data-cursor-hover="true">
         <span style={{ display: 'flex', alignItems: 'baseline', gap: 24, minWidth: 0 }}>
-          <span style={{ fontFamily: 'DM Mono, monospace', fontSize: '0.7rem', color: skillColor(num), opacity: 0.85 }}>{num}</span>
+          <span style={{ fontFamily: 'DM Mono, monospace', fontSize: '0.7rem', color: skillColor(num, isDark), opacity: 0.85 }}>{num}</span>
           <span style={{ fontFamily, fontWeight: 700, fontSize: 'clamp(1.3rem,2.6vw,2rem)', color: textColor }}>{text}</span>
         </span>
         <span style={{ display: 'flex', gap: 8, flexWrap: 'wrap', justifyContent: 'flex-end', maxWidth: 260 }}>
           {(tech || []).slice(0, 3).map((t, i) => (
-            <span key={i} style={{ fontFamily: 'DM Mono, monospace', fontSize: '0.56rem', letterSpacing: '0.08em', textTransform: 'uppercase', padding: '4px 8px', border: `0.5px solid ${skillColor(t)}`, borderRadius: 2, color: skillColor(t) }}>{t}</span>
+            <span key={i} style={{ fontFamily: 'DM Mono, monospace', fontSize: '0.56rem', letterSpacing: '0.08em', textTransform: 'uppercase', padding: '4px 8px', border: `0.5px solid ${skillColor(t, isDark)}`, borderRadius: 2, color: skillColor(t, isDark) }}>{t}</span>
           ))}
         </span>
       </a>

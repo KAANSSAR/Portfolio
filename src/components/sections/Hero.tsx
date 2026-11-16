@@ -28,8 +28,8 @@ export default function Hero() {
             autoRotate
             rotationSpeed={0.009}
             radius={2}
-            dotColor={isDark ? '#ffffff' : '#0A0A0A'}
-            oceanDotColor={isDark ? '#ffffff25' : '#0A0A0A20'}
+            dotColor={isDark ? '#ffffff' : '#121110'}
+            oceanDotColor={isDark ? '#ffffff25' : '#1211102e'}
             lightMode={!isDark}
           />
         </div>
@@ -48,7 +48,7 @@ export default function Hero() {
         <HeroNameCanvas />
 
         <div style={{ display: 'flex', alignItems: 'center', gap: 20, marginTop: 20, marginBottom: 44, flexWrap: 'wrap' }}>
-          <span className="hero-currently" style={{ fontFamily: "'DM Mono', monospace", fontSize: '0.68rem', letterSpacing: '0.15em', textTransform: 'uppercase', color: T.inkFaint }}>Currently —</span>
+          <span className="hero-currently" style={{ fontFamily: "'DM Mono', monospace", fontSize: '0.68rem', letterSpacing: '0.15em', textTransform: 'uppercase', color: T.inkFaint }}>Currently:</span>
           <GlitchText
             words={SHORT_ROLES}
             holdDuration={3200}

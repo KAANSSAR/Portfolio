@@ -43,6 +43,7 @@ export default function PortfolioChrome() {
           mouseInteraction
           mouseRadius={140}
           mouseStrength={1}
+          intensity={isDark ? 1 : 0.5}
         />
       </div>
 
@@ -55,7 +56,7 @@ export default function PortfolioChrome() {
           background: `radial-gradient(circle, ${T.bg} 0%, ${T.bg} 45%, transparent 72%)`,
         }}
       >
-        <div style={{ position: 'absolute', top: '50%', left: '50%', transform: 'translate(-50%,-50%)', width: 340, height: 340, opacity: 0.22 }}>
+        <div style={{ position: 'absolute', top: '50%', left: '50%', transform: 'translate(-50%,-50%)', width: 340, height: 340, opacity: isDark ? 0.6 : 0.65 }}>
           <Cube size={220} pxPerMove={220} isDark={isDark} />
         </div>
       </div>

@@ -1,5 +1,6 @@
 // @ts-nocheck -- ported design-tool component; kept as loosely-typed JS on purpose.
 'use client';
+import { accent } from '@/lib/accent';
 import React, { useState, useEffect, useRef, useCallback, useMemo } from 'react';
 
 const ICONS = {
@@ -31,7 +32,7 @@ function SocialShareFAB({ ink = '#0A0A0A', bg = '#FFFFFF', itemGap = 60, isDark 
   const wrapRef = useRef(null);
   const glass = isDark
     ? { background: 'rgba(120,120,120,0.22)', backdropFilter: 'blur(14px) saturate(1.4) brightness(1.15)', WebkitBackdropFilter: 'blur(14px) saturate(1.4) brightness(1.15)', border: '1px solid rgba(255,255,255,0.22)' }
-    : { background: 'rgba(15,15,15,0.55)', backdropFilter: 'blur(14px) saturate(1.2) brightness(0.9)', WebkitBackdropFilter: 'blur(14px) saturate(1.2) brightness(0.9)', border: '1px solid rgba(255,255,255,0.12)' };
+    : { background: 'rgba(255,255,255,0.72)', backdropFilter: 'blur(14px) saturate(1.6)', WebkitBackdropFilter: 'blur(14px) saturate(1.6)', border: '1px solid rgba(20,16,10,0.10)' };
 
   useEffect(() => { injectCSS(); }, []);
 
@@ -65,7 +66,7 @@ function SocialShareFAB({ ink = '#0A0A0A', bg = '#FFFFFF', itemGap = 60, isDark 
             onMouseLeave={() => setHoverIdx(null)}
             style={{
               position: 'absolute', left: 28, bottom: 28, width: 44, height: 44, borderRadius: '50%',
-              ...glass, boxShadow: '0 6px 16px rgba(0,0,0,0.25)', display: 'flex', alignItems: 'center', justifyContent: 'center',
+              ...glass, boxShadow: isDark ? '0 6px 16px rgba(0,0,0,0.25)' : '0 6px 18px rgba(40,30,15,0.12)', display: 'flex', alignItems: 'center', justifyContent: 'center',
               transform: open ? `translate(${bx + px}px, ${by + py}px) scale(${dimmed ? 0.92 : 1})` : 'translate(0,0) scale(0.3)',
               opacity: open ? (dimmed ? 0.45 : 1) : 0,
               filter: dimmed ? 'blur(1.5px)' : 'none',
@@ -75,7 +76,7 @@ function SocialShareFAB({ ink = '#0A0A0A', bg = '#FFFFFF', itemGap = 60, isDark 
               pointerEvents: open ? 'auto' : 'none',
             }}
           >
-            <svg width="18" height="18" viewBox="0 0 24 24" fill={ICON_COLORS[s.key]}><path d={ICONS[s.key]} /></svg>
+            <svg width="18" height="18" viewBox="0 0 24 24" fill={accent(ICON_COLORS[s.key], isDark)}><path d={ICONS[s.key]} /></svg>
           </a>
         );
       })}
@@ -89,11 +90,11 @@ function SocialShareFAB({ ink = '#0A0A0A', bg = '#FFFFFF', itemGap = 60, isDark 
         aria-label="Share"
         style={{
           position: 'absolute', left: 28, bottom: 28, width: 56, height: 56, borderRadius: '50%', ...glass,
-          boxShadow: '0 8px 20px rgba(0,0,0,0.25)', cursor: 'pointer', pointerEvents: 'auto',
+          boxShadow: isDark ? '0 8px 20px rgba(0,0,0,0.25)' : '0 8px 22px rgba(40,30,15,0.12)', cursor: 'pointer', pointerEvents: 'auto',
           display: 'flex', alignItems: 'center', justifyContent: 'center',
         }}
       >
-        <svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="#FFFFFF" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+        <svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke={isDark ? '#FFFFFF' : ink} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
           <circle cx="18" cy="5" r="3" /><circle cx="6" cy="12" r="3" /><circle cx="18" cy="19" r="3" />
           <path d="M8.6 10.6l6.8-3.9M8.6 13.4l6.8 3.9" />
         </svg>

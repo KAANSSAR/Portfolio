@@ -19,9 +19,9 @@ function GlassyMusicPlayer({ tracks = [], ink = '#FFFFFF', dim = 'rgba(255,255,2
 
   const glass = isDark
     ? { background: 'rgba(120,120,120,0.22)', backdropFilter: 'blur(18px) saturate(1.4) brightness(1.1)', WebkitBackdropFilter: 'blur(18px) saturate(1.4) brightness(1.1)', border: '1px solid rgba(255,255,255,0.18)' }
-    : { background: 'rgba(15,15,15,0.55)', backdropFilter: 'blur(18px) saturate(1.2) brightness(0.9)', WebkitBackdropFilter: 'blur(18px) saturate(1.2) brightness(0.9)', border: '1px solid rgba(255,255,255,0.12)' };
-  const content = isDark ? ink : '#FFFFFF';
-  const faint = isDark ? dim : 'rgba(255,255,255,0.55)';
+    : { background: 'rgba(255,255,255,0.72)', backdropFilter: 'blur(18px) saturate(1.6)', WebkitBackdropFilter: 'blur(18px) saturate(1.6)', border: '1px solid rgba(20,16,10,0.10)' };
+  const content = ink;
+  const faint = dim;
 
   useEffect(() => {
     const el = audioRef.current;
@@ -59,7 +59,7 @@ function GlassyMusicPlayer({ tracks = [], ink = '#FFFFFF', dim = 'rgba(255,255,2
   const CircleBtn = ({ onClick, children, label }) => (
     <button onClick={onClick} aria-label={label} style={{
       width: 32, height: 32, borderRadius: '50%', border: 'none', cursor: 'pointer',
-      background: isDark ? 'rgba(255,255,255,0.14)' : 'rgba(255,255,255,0.1)',
+      background: isDark ? 'rgba(255,255,255,0.14)' : 'rgba(18,17,16,0.07)',
       display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0,
     }}>{children}</button>
   );
@@ -69,7 +69,7 @@ function GlassyMusicPlayer({ tracks = [], ink = '#FFFFFF', dim = 'rgba(255,255,2
   return (
     <div style={{
       display: 'flex', alignItems: 'center', gap: 14, borderRadius: 999, padding: '10px 20px 10px 10px',
-      ...glass, boxShadow: 'inset 0 1.5px 0 rgba(255,255,255,0.25), 0 12px 30px rgba(0,0,0,0.25)',
+      ...glass, boxShadow: isDark ? 'inset 0 1.5px 0 rgba(255,255,255,0.25), 0 12px 30px rgba(0,0,0,0.25)' : 'inset 0 1px 0 rgba(255,255,255,0.9), 0 12px 30px rgba(40,30,15,0.12)',
     }}>
       {track.src && <audio ref={audioRef} src={track.src} preload="metadata" />}
       <div style={{
@@ -81,7 +81,7 @@ function GlassyMusicPlayer({ tracks = [], ink = '#FFFFFF', dim = 'rgba(255,255,2
         <div style={{ fontFamily: "'DM Mono', monospace", fontSize: '0.6rem', color: faint, marginTop: 2, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{track.artist || ''}</div>
         <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginTop: 6 }}>
           <span style={{ fontFamily: "'DM Mono', monospace", fontSize: '0.52rem', color: faint }}>{fmt(current)}</span>
-          <div ref={barRef} onClick={seek} style={{ width: 100, height: 3, borderRadius: 2, background: isDark ? 'rgba(255,255,255,0.2)' : 'rgba(255,255,255,0.25)', cursor: track.src ? 'pointer' : 'default', overflow: 'hidden' }}>
+          <div ref={barRef} onClick={seek} style={{ width: 100, height: 3, borderRadius: 2, background: isDark ? 'rgba(255,255,255,0.2)' : 'rgba(18,17,16,0.15)', cursor: track.src ? 'pointer' : 'default', overflow: 'hidden' }}>
             <div style={{ width: `${progress * 100}%`, height: '100%', background: content, opacity: 0.9 }} />
           </div>
           <span style={{ fontFamily: "'DM Mono', monospace", fontSize: '0.52rem', color: faint }}>{fmt(duration)}</span>

@@ -4,7 +4,14 @@ import React from 'react';
 import { useTheme } from '@/context/ThemeContext';
 
 export default function ThemeRoot({ children }: { children: React.ReactNode }) {
-  const { T } = useTheme();
+  const { T, isDark } = useTheme();
+  // Keep the page canvas (overscroll, behind fixed layers) in step with the theme.
+  React.useEffect(() => {
+    const root = document.documentElement;
+    root.dataset.theme = isDark ? 'dark' : 'light';
+    root.style.background = T.bg;
+    root.style.colorScheme = isDark ? 'dark' : 'light';
+  }, [isDark, T.bg]);
   return (
     <div
       style={{

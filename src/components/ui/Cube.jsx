@@ -59,7 +59,7 @@ function injectCSS(isDark) {
   if (existing) existing.remove();
   const s = document.createElement('style');
   s.id = 'rc-styles';
-  const borderColor = isDark ? 'rgba(255,255,255,0.55)' : 'rgba(0,0,0,0.55)';
+  const borderColor = isDark ? 'rgba(255,255,255,0.55)' : 'rgba(18,17,16,0.7)';
   const textColor = isDark ? 'rgba(255,255,255,0.92)' : 'rgba(0,0,0,0.92)';
   s.textContent = `
 .rc-container{transform-style:preserve-3d;-webkit-user-select:none;user-select:none}
@@ -92,7 +92,7 @@ function buildTickerMap(positions, cw) {
 
 function Cubie({ translate, orientation, tickers, quotes, cw, isDark }) {
   const style = { transform: `translate3d(${translate[0]}px,${translate[1]}px,${translate[2]}px) rotate3d(${orientation[0]},${orientation[1]},${orientation[2]},${orientation[3]}deg)` };
-  const faceBg = isDark ? '#000000' : '#FFFFFF';
+  const faceBg = isDark ? '#000000' : '#FDFCFA';
   const symColor = isDark ? 'rgba(255,255,255,1)' : 'rgba(0,0,0,1)';
   return (
     <div className="rc-cube" style={style}>
@@ -104,7 +104,7 @@ function Cubie({ translate, orientation, tickers, quotes, cw, isDark }) {
             {sym != null && q && (
               <React.Fragment>
                 <div style={{ fontSize: cw * 0.16, fontWeight: 700, color: symColor }}>{DISPLAY_SYMBOL[sym] || sym}</div>
-                <div style={{ fontSize: cw * 0.13, fontWeight: 700, color: q.up ? '#2ECC71' : '#FF4D4D' }}>{q.up ? '▲' : '▼'} {q.pct}</div>
+                <div style={{ fontSize: cw * 0.13, fontWeight: 700, color: q.up ? (isDark ? '#2ECC71' : '#16894A') : (isDark ? '#FF4D4D' : '#C8302F') }}>{q.up ? '▲' : '▼'} {q.pct}</div>
               </React.Fragment>
             )}
           </div>

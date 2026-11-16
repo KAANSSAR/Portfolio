@@ -3,16 +3,17 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { useTheme } from '@/context/ThemeContext';
 import { ABOUT_PARAGRAPHS, SKILLS, STATS, GLITCH_COLORS } from '@/lib/data';
+import { accent } from '@/lib/accent';
 
 const EASE_OUT_EXPO = (p: number) => (p >= 1 ? 1 : 1 - Math.pow(2, -10 * p));
 
-function hashColor(name: string) {
+function hashColor(name: string, isDark: boolean) {
   const h = [...name].reduce((acc, c) => (acc * 31 + c.charCodeAt(0)) >>> 0, 0);
-  return GLITCH_COLORS[h % GLITCH_COLORS.length];
+  return accent(GLITCH_COLORS[h % GLITCH_COLORS.length], isDark);
 }
 
 export default function About() {
-  const { T } = useTheme();
+  const { T, isDark } = useTheme();
   const [progress, setProgress] = useState(0);
   const sectionRef = useRef<HTMLDivElement>(null);
 
@@ -63,8 +64,8 @@ export default function About() {
   return (
     <section id="about" ref={sectionRef} style={{ maxWidth: 1680, margin: '0 auto', padding: '4.5rem 1.5rem' }}>
       <div className="sec-label" style={{ fontFamily: "'DM Mono', monospace", fontSize: '0.68rem', letterSpacing: '0.22em', textTransform: 'uppercase', display: 'flex', alignItems: 'center', gap: 16, marginBottom: 48, color: T.inkFaint }}>
-        <span style={{ color: '#FF6B6B' }}>About</span>
-        <span style={{ flex: 1, height: 1, maxWidth: 80, background: '#FF6B6B', opacity: 0.4 }} />
+        <span style={{ color: accent('#FF6B6B', isDark) }}>About</span>
+        <span style={{ flex: 1, height: 1, maxWidth: 80, background: accent('#FF6B6B', isDark), opacity: 0.4 }} />
       </div>
 
       <div className="resp-2col" style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 96, alignItems: 'start' }}>
@@ -83,7 +84,7 @@ export default function About() {
           </div>
           <div style={{ display: 'flex', flexWrap: 'wrap', gap: 8, marginTop: 40 }}>
             {SKILLS.map((s) => {
-              const color = hashColor(s);
+              const color = hashColor(s, isDark);
               return (
                 <span
                   key={s}
