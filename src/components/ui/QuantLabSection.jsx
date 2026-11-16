@@ -4,6 +4,7 @@ import React, { useState, useEffect, useRef, useCallback, useMemo } from 'react'
 
 import { getSb } from '@/lib/supabaseClient';
 import { noEmDash } from '@/lib/noEmDash';
+import { useReaderRoute, useScrollLock } from '@/lib/useReaderRoute';
 import { BlockMath } from 'react-katex';
 import 'katex/dist/katex.min.css';
 
@@ -253,7 +254,7 @@ function ResearchCaseStudy({ slug, onClose, note, authed, onEdit }) {
   if (!note) return null;
   if (note.format === 'simple') {
     return (
-      <div style={{ position: 'fixed', inset: 0, zIndex: 320, background: '#151210', overflowY: 'auto' }}>
+      <div style={{ position: 'fixed', inset: 0, zIndex: 320, background: '#151210', overflowY: 'auto', overscrollBehavior: 'contain' }}>
         <div className="reader-body" style={{ maxWidth: 780, margin: '0 auto', padding: '64px 48px 100px' }}>
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 32 }}>
             <span onClick={onClose} data-cursor-hover="true" style={{ cursor: 'pointer', fontFamily: "'DM Mono', monospace", fontSize: '0.7rem', letterSpacing: '0.1em', textTransform: 'uppercase', color: '#8C8676' }}>← Back to Quant Lab</span>
@@ -273,7 +274,7 @@ function ResearchCaseStudy({ slug, onClose, note, authed, onEdit }) {
     );
   }
   return (
-    <div style={{ position: 'fixed', inset: 0, zIndex: 320, background: '#151210', overflowY: 'auto' }}>
+    <div style={{ position: 'fixed', inset: 0, zIndex: 320, background: '#151210', overflowY: 'auto', overscrollBehavior: 'contain' }}>
       <div className="reader-body" style={{ maxWidth: 1100, margin: '0 auto', padding: '64px 48px 100px' }}>
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 32 }}>
           <span onClick={onClose} data-cursor-hover="true" style={{ cursor: 'pointer', fontFamily: "'DM Mono', monospace", fontSize: '0.7rem', letterSpacing: '0.1em', textTransform: 'uppercase', color: '#8C8676' }}>← Back to Quant Lab</span>
@@ -342,6 +343,7 @@ function CardCarousel({ items, accentColor, onOpen, editMode, onEditCard }) {
 
 function QuantLabSection({ ink = '#0A0A0A', inkFaint = '#8C8C8C', inkMuted = '#4D4D4D', line = 'rgba(10,10,10,0.12)', accentColor = '#F5C518', labelColor = accentColor }) {
   const [openSlug, setOpenSlug] = useState(null);
+  const closeNote = useReaderRoute('research', openSlug, setOpenSlug);
   const [overrides, setOverrides] = useState({});
   const [ready, setReady] = useState(true);
   const [authed, setAuthed] = useState(false);
@@ -353,6 +355,7 @@ function QuantLabSection({ ink = '#0A0A0A', inkFaint = '#8C8C8C', inkMuted = '#4
   const [editMode, setEditMode] = useState(false);
   const [newChoice, setNewChoice] = useState(false);
   const [simpleEditing, setSimpleEditing] = useState(null);
+  useScrollLock(!!(openSlug || editingSlug || simpleEditing));
   const [simpleForm, setSimpleForm] = useState({ title: '', subtitle: '', summary: '', tags: '', cover_image: '' });
   const simpleBodyRef = useRef(null);
   const simpleFileRef = useRef(null);
@@ -517,7 +520,7 @@ function QuantLabSection({ ink = '#0A0A0A', inkFaint = '#8C8C8C', inkMuted = '#4
 
       <CardCarousel items={filteredNotes} accentColor={accentColor} editMode={editMode} onOpen={n => setOpenSlug(n.slug)} onEditCard={n => startEdit(n.slug)} />
 
-      {openSlug && <ResearchCaseStudy slug={openSlug} note={notes.find(n => n.slug === openSlug)} onClose={() => setOpenSlug(null)} authed={authed} onEdit={() => startEdit(openSlug)} />}
+      {openSlug && <ResearchCaseStudy slug={openSlug} note={notes.find(n => n.slug === openSlug)} onClose={closeNote} authed={authed} onEdit={() => startEdit(openSlug)} />}
 
       {pwPrompt && (
         <div style={{ position: 'fixed', inset: 0, zIndex: 400, background: 'rgba(0,0,0,0.6)', display: 'flex', alignItems: 'center', justifyContent: 'center' }} onClick={() => setPwPrompt(false)}>
@@ -541,7 +544,7 @@ function QuantLabSection({ ink = '#0A0A0A', inkFaint = '#8C8C8C', inkMuted = '#4
       )}
 
       {simpleEditing && (
-        <div style={{ position: 'fixed', inset: 0, zIndex: 360, background: '#151210', overflowY: 'auto' }}>
+        <div style={{ position: 'fixed', inset: 0, zIndex: 360, background: '#151210', overflowY: 'auto', overscrollBehavior: 'contain' }}>
           <div className="reader-body" style={{ maxWidth: 780, margin: '0 auto', padding: '60px 32px 120px' }}>
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 32 }}>
               <span onClick={() => setSimpleEditing(null)} data-cursor-hover="true" style={{ cursor: 'pointer', fontFamily: "'DM Mono', monospace", fontSize: '0.7rem', letterSpacing: '0.1em', textTransform: 'uppercase', color: '#8C8676' }}>Cancel</span>
@@ -571,7 +574,7 @@ function QuantLabSection({ ink = '#0A0A0A', inkFaint = '#8C8C8C', inkMuted = '#4
       )}
 
       {editingSlug && (
-        <div style={{ position: 'fixed', inset: 0, zIndex: 360, background: '#151210', overflowY: 'auto' }}>
+        <div style={{ position: 'fixed', inset: 0, zIndex: 360, background: '#151210', overflowY: 'auto', overscrollBehavior: 'contain' }}>
           <div className="reader-body" style={{ maxWidth: 800, margin: '0 auto', padding: '60px 32px 100px' }}>
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 20 }}>
               <span onClick={() => setEditingSlug(null)} data-cursor-hover="true" style={{ cursor: 'pointer', fontFamily: "'DM Mono', monospace", fontSize: '0.7rem', letterSpacing: '0.1em', textTransform: 'uppercase', color: '#8C8676' }}>Cancel</span>

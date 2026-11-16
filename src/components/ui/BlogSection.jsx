@@ -4,6 +4,7 @@ import React, { useState, useEffect, useRef, useCallback, useMemo } from 'react'
 
 import { getSb } from '@/lib/supabaseClient';
 import { noEmDash } from '@/lib/noEmDash';
+import { useReaderRoute, useScrollLock } from '@/lib/useReaderRoute';
 // No client-side password here on purpose, the editor gate is checked
 // server-side via /api/editor/login, which is the only place that ever
 // sees BLOG_EDITOR_PASSWORD. See src/lib/editorSession.ts.
@@ -113,6 +114,15 @@ function BlogSection({
     document.body.dataset.fullscreenOverlay = (activePost || editing) ? '1' : '';
     return () => { document.body.dataset.fullscreenOverlay = ''; };
   }, [activePost, editing]);
+  const postsRef = useRef([]);
+  useEffect(() => { postsRef.current = posts; }, [posts]);
+  const closeReader = useReaderRoute(
+    category === 'blog' ? 'writing' : category,
+    activePost ? String(activePost.id) : null,
+    key => setActivePost(key == null ? null : postsRef.current.find(p => String(p.id) === String(key)) || null),
+    !loading && posts.length > 0,
+  );
+  useScrollLock(!!(activePost || editing));
   const [authed, setAuthed] = useState(false);
   const [pwPrompt, setPwPrompt] = useState(false);
   const [pwInput, setPwInput] = useState('');
@@ -195,7 +205,7 @@ function BlogSection({
   const deletePost = (p) => {
     fetch(`/api/editor/posts/${p.id}`, { method: 'DELETE' })
       .then(r => r.json())
-      .then(d => { if (d.ok) { setActivePost(null); fetchPosts(); } })
+      .then(d => { if (d.ok) { closeReader(); fetchPosts(); } })
       .catch(() => {});
   };
 
@@ -251,12 +261,12 @@ function BlogSection({
       )}
 
       {activePost && !editing && (
-        <div style={{ position: 'fixed', inset: 0, zIndex: 300, background: bg, overflowY: 'auto' }}>
+        <div style={{ position: 'fixed', inset: 0, zIndex: 300, background: bg, overflowY: 'auto', overscrollBehavior: 'contain' }}>
           <div className="reader-body" style={{ maxWidth: 760, margin: '0 auto', padding: '80px 32px 120px',
             '--pb-ink': ink, '--pb-muted': inkMuted, '--pb-faint': inkFaint, '--pb-line': line,
             '--pb-head': `color-mix(in srgb, ${ink} 4%, transparent)`, '--pb-accent': labelColor }}>
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 40 }}>
-              <span onClick={() => setActivePost(null)} data-cursor-hover="true" style={{ cursor: 'pointer', fontFamily: "'DM Mono', monospace", fontSize: '0.7rem', letterSpacing: '0.1em', textTransform: 'uppercase', color: inkFaint }}>← Back</span>
+              <span onClick={closeReader} data-cursor-hover="true" style={{ cursor: 'pointer', fontFamily: "'DM Mono', monospace", fontSize: '0.7rem', letterSpacing: '0.1em', textTransform: 'uppercase', color: inkFaint }}>← Back</span>
               {authed && (
                 <span style={{ display: 'flex', gap: 16 }}>
                   <span onClick={() => openEdit(activePost)} data-cursor-hover="true" style={{ cursor: 'pointer', fontFamily: "'DM Mono', monospace", fontSize: '0.65rem', color: accentColor }}>Edit</span>
