@@ -113,10 +113,9 @@ export default function About() {
               </div>
             ))}
           </div>
+          <TopTracks />
         </div>
       </div>
-
-      <TopTracks />
     </section>
   );
 }

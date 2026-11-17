@@ -11,6 +11,8 @@ const RANGES = [
   { key: 'long_term', label: 'All time' },
 ] as const;
 const GREEN = '#1DB954';
+// "Hotel California - 2013 Remaster" -> "Hotel California"
+const cleanName = (n: string) => n.replace(/\s+-\s+(\d{4}\s+)?Remaster(ed)?(\s+\d{4})?(\s+Version)?$/i, '');
 
 export default function TopTracks() {
   const { T, isDark } = useTheme();
@@ -36,8 +38,8 @@ export default function TopTracks() {
   const mono = "'DM Mono', monospace";
 
   return (
-    <div className="top-tracks" style={{ marginTop: 88, paddingTop: 40, borderTop: `0.5px solid ${T.line}` }}>
-      <div className="tt-head" style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 16, flexWrap: 'wrap', marginBottom: 28 }}>
+    <div className="top-tracks" style={{ marginTop: 40 }}>
+      <div className="tt-head" style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 16, flexWrap: 'wrap', marginBottom: 16 }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
           <span className="tt-eq" aria-hidden style={{ display: 'inline-flex', alignItems: 'flex-end', gap: 2, height: 14 }}>
             {[0, 1, 2].map((i) => (
@@ -62,49 +64,33 @@ export default function TopTracks() {
         </div>
       </div>
 
-      <ol className="tt-list" style={{ listStyle: 'none', margin: 0, padding: 0, display: 'grid', gridTemplateColumns: 'repeat(5, minmax(0, 190px))', justifyContent: 'space-between', gap: 28 }}>
+      <ol className="tt-list" style={{ listStyle: 'none', margin: 0, padding: 0, display: 'flex', flexDirection: 'column', gap: 8 }}>
         {(tracks || Array.from({ length: 5 }, () => null)).slice(0, 5).map((t, i) => (
-          <li key={t ? t.url + i : i} className="tt-item">
-            <a href={t?.url} target="_blank" rel="noopener noreferrer" className="tt-row"
-              style={{ display: 'flex', flexDirection: 'column', gap: 12, textDecoration: 'none', color: 'inherit', pointerEvents: t ? 'auto' : 'none' }}>
-              <span className="tt-art" style={{ position: 'relative', width: '100%', aspectRatio: '1 / 1', borderRadius: 6, overflow: 'hidden', background: T.line }}>
-                {t?.image && <img src={t.image} alt="" loading="lazy" style={{ width: '100%', height: '100%', objectFit: 'cover', display: 'block', transition: 'transform .4s' }} />}
-                <svg className="tt-arrow" width="14" height="14" viewBox="0 0 12 12" aria-hidden style={{ position: 'absolute', top: 10, right: 10, opacity: 0, transition: 'opacity .2s', color: '#fff', filter: 'drop-shadow(0 1px 2px rgba(0,0,0,.6))' }}>
-                  <path d="M3 9L9 3M4 3h5v5" stroke="currentColor" strokeWidth="1.4" fill="none" />
-                </svg>
+          <li key={t ? t.url + i : i}>
+            <a href={t?.url} target="_blank" rel="noopener noreferrer" className="tt-pill"
+              style={{ display: 'flex', alignItems: 'center', gap: 12, padding: '5px 16px 5px 5px', borderRadius: 999, border: `0.5px solid ${T.line}`,
+                background: isDark ? 'rgba(255,255,255,0.03)' : 'rgba(0,0,0,0.025)', textDecoration: 'none', color: 'inherit', pointerEvents: t ? 'auto' : 'none', transition: 'border-color .2s, background .2s' }}>
+              <span style={{ width: 32, height: 32, flexShrink: 0, borderRadius: '50%', overflow: 'hidden', background: T.line }}>
+                {t?.image && <img src={t.image} alt="" width={32} height={32} loading="lazy" style={{ width: '100%', height: '100%', objectFit: 'cover', display: 'block' }} />}
               </span>
-              <span className="tt-meta" style={{ display: 'flex', gap: 10, alignItems: 'baseline', minWidth: 0 }}>
-                <span className="tt-num" style={{ fontFamily: mono, fontSize: '0.72rem', color: T.inkFaint, flexShrink: 0 }}>{String(i + 1).padStart(2, '0')}</span>
-                <span className="tt-text" style={{ minWidth: 0, flex: 1 }}>
-                  <span className="tt-name" style={{ display: 'block', fontSize: '0.92rem', color: T.ink, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis', transition: 'color .2s' }}>
-                    {t ? t.name : '\u00A0'}
-                  </span>
-                  <span style={{ display: 'block', fontSize: '0.78rem', color: T.inkFaint, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis', marginTop: 2 }}>
-                    {t ? t.artist : '\u00A0'}
-                  </span>
-                </span>
+              <span style={{ fontFamily: mono, fontSize: '0.66rem', color: T.inkFaint, flexShrink: 0 }}>{String(i + 1).padStart(2, '0')}</span>
+              <span style={{ minWidth: 0, flex: 1, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis', fontSize: '0.84rem' }}>
+                <span className="tt-name" style={{ color: T.ink, transition: 'color .2s' }}>{t ? cleanName(t.name) : '\u00A0'}</span>
+                {t && <span style={{ color: T.inkFaint }}>{'  \u00B7  '}{t.artist}</span>}
               </span>
+              <svg className="tt-arrow" width="11" height="11" viewBox="0 0 12 12" aria-hidden style={{ flexShrink: 0, opacity: 0, transition: 'opacity .2s', color: green }}>
+                <path d="M3 9L9 3M4 3h5v5" stroke="currentColor" strokeWidth="1.4" fill="none" />
+              </svg>
             </a>
           </li>
         ))}
       </ol>
       <style>{`
         @keyframes ttEq { 0%,100% { transform: scaleY(.3) } 50% { transform: scaleY(1) } }
-        .tt-row:hover .tt-name { color: ${green} !important; }
-        .tt-row:hover .tt-arrow { opacity: 1 !important; }
-        .tt-row:hover .tt-art img { transform: scale(1.05); }
-        @media (max-width: 768px) {
-          .top-tracks { margin-top: 56px !important; }
-          .tt-list { grid-template-columns: 1fr !important; gap: 0 !important; }
-          .tt-item { border-bottom: 0.5px solid ${T.line}; }
-          .tt-row { flex-direction: row !important; align-items: center; padding: 12px 4px; gap: 16px !important; }
-          .tt-meta { display: contents !important; }
-          .tt-num { order: 0; width: 22px; }
-          .tt-art { order: 1; }
-          .tt-text { order: 2; }
-          .tt-art { width: 44px !important; flex-shrink: 0; border-radius: 4px !important; }
-          .tt-arrow { display: none; }
-        }
+        .tt-pill:hover { border-color: ${green} !important; }
+        .tt-pill:hover .tt-name { color: ${green} !important; }
+        .tt-pill:hover .tt-arrow { opacity: 1 !important; }
+        @media (max-width: 520px) { .tt-head { flex-direction: column; align-items: flex-start !important; gap: 12px !important; } }
         @media (prefers-reduced-motion: reduce) { .tt-eq span { animation: none !important; } }
       `}</style>
     </div>
