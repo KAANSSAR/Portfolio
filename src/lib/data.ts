@@ -60,11 +60,9 @@ export const SHORT_ROLES = [
 
 export type Stat = { value: string; numericValue?: number; suffix?: string; noSeparator?: boolean; decimals?: number; label: string };
 export const STATS: Stat[] = [
-  { value: '91', numericValue: 91, suffix: '%', label: 'mAP@50 on YOLO cattle measurement model (SOFT3888)' },
   { value: '200', numericValue: 200, suffix: '+', label: 'First-year engineering students mentored per semester' },
   { value: '500+', numericValue: 500, suffix: '+', label: 'Securities tracked in Stratum NSE500 momentum engine' },
   { value: '93.8%', numericValue: 93.8, suffix: '%', decimals: 1, label: 'Of degree-plan repairs proved to be the shortest possible (Honours thesis)' },
-  { value: '4', numericValue: 4, suffix: '', label: 'Agentic AI analysts across 3 markets: US, India, Europe (Cardinal)' },
   { value: '2022', numericValue: 2022, noSeparator: true, label: 'USYD International Student Award recipient' },
 ];
 
