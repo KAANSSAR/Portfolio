@@ -57,7 +57,7 @@ export default function About() {
     label: s.label,
     display:
       s.numericValue != null
-        ? `${s.noSeparator ? Math.round(s.numericValue * ease) : Math.round(s.numericValue * ease).toLocaleString('en-US')}${s.suffix || ''}`
+        ? `${s.decimals ? (s.numericValue * ease).toFixed(s.decimals) : s.noSeparator ? Math.round(s.numericValue * ease) : Math.round(s.numericValue * ease).toLocaleString('en-US')}${s.suffix || ''}`
         : s.value,
   }));
 
@@ -105,7 +105,7 @@ export default function About() {
           <div style={{ borderTop: `0.5px solid ${T.line}` }}>
             {stats.map((st) => (
               <div key={st.label} style={{ display: 'flex', alignItems: 'baseline', gap: 24, padding: '26px 0', borderBottom: `0.5px solid ${T.line}` }}>
-                <div className="stat-value" style={{ fontFamily: "'Playfair Display', serif", fontWeight: 700, lineHeight: 1, fontSize: '2.6rem', minWidth: 100, textAlign: 'center', color: T.ink }}>
+                <div className="stat-value" style={{ fontFamily: "'Playfair Display', serif", fontWeight: 700, lineHeight: 1, fontSize: '2.6rem', minWidth: 116, textAlign: 'center', color: T.ink }}>
                   {st.display}
                 </div>
                 <div className="stat-label" style={{ fontSize: '0.82rem', lineHeight: 1.55, color: T.inkFaint }}>{st.label}</div>

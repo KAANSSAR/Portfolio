@@ -10,8 +10,8 @@ export const SITE = {
   resumeUrl: '/resume.pdf',
   roles: [
     'Software Engineer (Honours)',
-    'Building Stratum & Options Pricing Engines',
-    'Currently training for a Half Marathon',
+    'Focused on the Asian markets',
+    'Half marathon finisher',
     'ML & Agentic AI Engineer',
   ],
 };
@@ -41,9 +41,9 @@ export const MARQUEE_ITEMS = [
 ];
 
 export const ABOUT_PARAGRAPHS = [
-  "I'm a final-year Software Engineering (Honours) student at the University of Sydney, living at the intersection of technology, markets, and ideas.",
-  "My work spans production-grade agentic AI systems at TCS Garage, to a cross-platform MAUI production tracking system embedded at Hanlon Industries. I'm currently building Stratum, a quantitative market analytics engine for NSE500 equities, and an Options Pricing Engine implementing Black-Scholes, Binomial Trees, and Monte Carlo simulations. I'm also building Cardinal, a Bloomberg-terminal-style equity analysis platform for DCF valuation, quant signals, backtesting, and a multi-agent AI research team.",
-  'Outside of code: sketching (@art_by_kaanssar), football, padel, running, and studying market microstructure.',
+  "I'm a final-year Software Engineering (Honours) student at the University of Sydney. I like building things where technology and markets meet. I'm particularly interested in the Asian markets at the moment, but I also keep track of the European and American markets.",
+  "I've built production agentic AI systems at TCS Garage and a cross-platform production tracking system for Hanlon Industries. On the markets side, I built Stratum, a momentum engine for the NSE 500, an Options Pricing Engine with Black-Scholes, binomial trees and Monte Carlo, and Cardinal, an equity research terminal with valuation, signals, backtests and four AI analysts. My honours thesis, now submitted and presented, is a planning engine that repairs engineering degree plans at USYD and UTS and checks that every plan it gives follows the rules.",
+  "Outside of code: sketching (@art_by_kaanssar), football, padel and long-distance running.",
 ];
 
 export const SKILLS = ['Python', 'TypeScript', 'React Native', 'Next.js', '.NET MAUI', 'Multi-Agent AI', 'Quant Finance'];
@@ -58,12 +58,12 @@ export const SHORT_ROLES = [
   'Music, Books, Sport & Sketching',
 ];
 
-export type Stat = { value: string; numericValue?: number; suffix?: string; noSeparator?: boolean; label: string };
+export type Stat = { value: string; numericValue?: number; suffix?: string; noSeparator?: boolean; decimals?: number; label: string };
 export const STATS: Stat[] = [
   { value: '91', numericValue: 91, suffix: '%', label: 'mAP@50 on YOLO cattle measurement model (SOFT3888)' },
   { value: '200', numericValue: 200, suffix: '+', label: 'First-year engineering students mentored per semester' },
   { value: '500+', numericValue: 500, suffix: '+', label: 'Securities tracked in Stratum NSE500 momentum engine' },
-  { value: '220', numericValue: 220, suffix: '', label: 'Test suite covering the Options Pricing Engine' },
+  { value: '93.8%', numericValue: 93.8, suffix: '%', decimals: 1, label: 'Of degree-plan repairs proved to be the shortest possible (Honours thesis)' },
   { value: '4', numericValue: 4, suffix: '', label: 'Agentic AI analysts across 3 markets: US, India, Europe (Cardinal)' },
   { value: '2022', numericValue: 2022, noSeparator: true, label: 'USYD International Student Award recipient' },
 ];
@@ -91,7 +91,7 @@ export const PROJECTS: Project[] = [
   { num: '04', name: 'Agentic AI · TCS Enterprise', tech: ['Python', 'LangChain', 'LangGraph', 'RAG', 'OpenAI', 'Claude API'], desc: 'Production-grade agentic AI system to mitigate hallucinations in enterprise knowledge applications.', url: 'https://www.linkedin.com/feed/update/urn:li:activity:7428125043488006144/' },
   { num: '05', name: 'CattleScanner', tech: ['YOLO v8', 'DepthAI', 'OpenCV', 'Python', 'PyQt5'], desc: 'Automated cattle hip height measurement system using DepthAI depth cameras.', url: 'https://github.com/KAANSSAR/CattleScanner' },
   { num: '06', name: 'Honours Thesis', tech: ['Python', 'CP-SAT', 'Ollama', 'Qwen3'], desc: 'Deterministic degree-planning engine for USYD and UTS engineering degrees. Rebuilds a plan after a failed unit, verified clean on 1,497 of 1,497 single-failure repairs, with a thin language-model layer for questions.', url: 'https://github.com/KAANSSAR/honours-thesis' },
-  { num: '07', name: 'Shivam Brass · Site Redesign', tech: ['PHP', 'HTML/CSS', 'JavaScript', 'XAMPP', 'localStorage API'], desc: 'Ground-up commercial site redesign delivering 3 net-new functionalities across 32 product categories.', url: 'https://www.shivambrass.com/' },
+  { num: '07', name: 'Shivam Brass · Client Work', tech: ['PHP', 'HTML/CSS', 'JavaScript', 'XAMPP', 'localStorage API'], desc: 'Ground-up commercial site redesign delivering 3 net-new functionalities across 32 product categories.', url: 'https://www.shivambrass.com/' },
   { num: '08', name: 'Job Management App Refactor', tech: ['.NET MAUI', 'C#', 'REST APIs', 'Azure SQL'], desc: "Optimised Hanlon Industries' cross-platform MAUI application by implementing instance tracking automation.", url: 'https://www.linkedin.com/feed/update/urn:li:activity:7358800791308021782/' },
 ];
 

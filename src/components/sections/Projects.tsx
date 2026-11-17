@@ -11,7 +11,7 @@ const FlowingMenu = dynamic(() => import('../ui/FlowingMenu'), { ssr: false });
 // Ported 1:1 from PROJECTS_RAW.map(...) in Portfolio Rebuild.dc.html's renderVals().
 const SPECIAL_PROJECT_NAMES = [
   'Stratum', 'Options Pricing Engine', 'Agentic AI · TCS Enterprise', 'CattleScanner',
-  'Shivam Brass · Site Redesign', 'Job Management App Refactor', 'Cardinal', 'Honours Thesis',
+  'Shivam Brass · Client Work', 'Job Management App Refactor', 'Cardinal', 'Honours Thesis',
 ];
 const DATA_VIEW_NAMES = new Set(SPECIAL_PROJECT_NAMES.slice(0, 4));
 
@@ -20,7 +20,7 @@ function buildFlowingMenuItems() {
     const image =
       p.name === 'Stratum' ? '/images/stratum-logo-dark.png'
       : p.name === 'Agentic AI · TCS Enterprise' ? '/images/tcs-logo.png'
-      : p.name === 'Shivam Brass · Site Redesign' ? '/images/shivam-brass-logo.png'
+      : p.name === 'Shivam Brass · Client Work' ? '/images/shivam-brass-logo.png'
       : p.name === 'Job Management App Refactor' ? '/images/hanlon-logo.png'
       : PLACEHOLDER_IMG;
 
@@ -34,13 +34,13 @@ function buildFlowingMenuItems() {
       matrixRain: p.name === 'Options Pricing Engine',
       tcsLogo: p.name === 'Agentic AI · TCS Enterprise',
       scanEffect: p.name === 'CattleScanner',
-      logoOnly: p.name === 'Shivam Brass · Site Redesign' || p.name === 'Job Management App Refactor',
+      logoOnly: p.name === 'Shivam Brass · Client Work' || p.name === 'Job Management App Refactor',
       videoLoop: p.name === 'Cardinal' ? '/video/cardinal-wordmark-glitch.mp4' : undefined,
       starfield: false,
       currencyRain: p.name === 'Cardinal',
       replanView: p.name === 'Honours Thesis',
       panelBg:
-        p.name === 'Shivam Brass · Site Redesign' ? '#1F1810'
+        p.name === 'Shivam Brass · Client Work' ? '#1F1810'
         : p.name === 'Job Management App Refactor' ? '#40296A'
         : p.name === 'Cardinal' ? '#000000'
         : p.name === 'Honours Thesis' ? '#0A0A0A'

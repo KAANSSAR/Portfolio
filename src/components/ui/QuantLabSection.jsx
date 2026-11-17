@@ -5,6 +5,7 @@ import React, { useState, useEffect, useRef, useCallback, useMemo } from 'react'
 import { getSb } from '@/lib/supabaseClient';
 import { noEmDash } from '@/lib/noEmDash';
 import { useReaderRoute, useScrollLock } from '@/lib/useReaderRoute';
+import { CASE_STUDIES } from '@/lib/caseStudies';
 import { BlockMath } from 'react-katex';
 import 'katex/dist/katex.min.css';
 
@@ -156,6 +157,9 @@ const RESEARCH_NOTES = [
   },
 ];
 
+// Case studies come first in the carousel, then the research notes.
+const ALL_NOTES = [...CASE_STUDIES, ...RESEARCH_NOTES];
+
 const PY_KEYWORDS = ['def', 'for', 'in', 'if', 'else', 'elif', 'return', 'import', 'as', 'while', 'lambda', 'not', 'and', 'or', 'class', 'with'];
 function highlightPython(code) {
   const lines = code.split('\n');
@@ -250,6 +254,48 @@ function Slide({ slide }) {
   );
 }
 
+// The technical half of a case study, folded away until the reader asks for it.
+function DeepDive({ slides }) {
+  const [open, setOpen] = useState(false);
+  const ref = React.useRef(null);
+  const toggle = () => {
+    setOpen(o => !o);
+    if (!open) setTimeout(() => ref.current?.scrollIntoView({ behavior: 'smooth', block: 'start' }), 60);
+  };
+  return (
+    <div ref={ref} style={{ marginBottom: 48, scrollMarginTop: 24 }}>
+      <button
+        onClick={toggle}
+        data-cursor-hover="true"
+        aria-expanded={open}
+        className="deep-dive-toggle"
+        style={{
+          width: '100%', display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 16,
+          padding: '22px 26px', borderRadius: 12, cursor: 'pointer', textAlign: 'left',
+          background: open ? 'rgba(245,197,24,0.08)' : 'rgba(255,255,255,0.03)',
+          border: `1px solid ${open ? 'rgba(245,197,24,0.5)' : 'rgba(255,255,255,0.14)'}`,
+        }}
+      >
+        <span>
+          <span style={{ display: 'block', fontFamily: "'DM Mono', monospace", fontSize: '0.62rem', letterSpacing: '0.2em', textTransform: 'uppercase', color: '#F5C518', marginBottom: 6 }}>For engineers and quants</span>
+          <span style={{ display: 'block', fontFamily: "'Playfair Display', serif", fontWeight: 700, fontSize: 'clamp(18px,2vw,24px)', color: '#F2EEE6' }}>{open ? 'Hide the technical deep dive' : 'Read the technical deep dive'}</span>
+          <span style={{ display: 'block', fontFamily: "'DM Sans', sans-serif", fontSize: '0.82rem', color: '#8C8676', marginTop: 4 }}>{slides.length} sections: the maths, the code and the trade-offs</span>
+        </span>
+        <span style={{ fontSize: 22, color: '#F5C518', transform: open ? 'rotate(180deg)' : 'none', transition: 'transform 0.3s ease', flexShrink: 0 }}>↓</span>
+      </button>
+      {open && (
+        <div className="deep-dive-body" style={{ marginTop: 56 }}>
+          {slides.map((s, i) => (
+            <div key={i} style={{ paddingBottom: 56, marginBottom: 56, borderBottom: i < slides.length - 1 ? '1px solid rgba(255,255,255,0.1)' : 'none' }}>
+              <Slide slide={s} />
+            </div>
+          ))}
+        </div>
+      )}
+    </div>
+  );
+}
+
 function ResearchCaseStudy({ slug, onClose, note, authed, onEdit }) {
   if (!note) return null;
   if (note.format === 'simple') {
@@ -292,6 +338,8 @@ function ResearchCaseStudy({ slug, onClose, note, authed, onEdit }) {
           </div>
         ))}
 
+        {note.deepDive && note.deepDive.length > 0 && <DeepDive key={note.slug} slides={note.deepDive} />}
+
         {note.relatedProjects && (
           <div style={{ marginTop: 8, paddingTop: 24, borderTop: '1px solid rgba(255,255,255,0.1)', display: 'flex', gap: 16, alignItems: 'center' }}>
             <span style={{ fontFamily: "'DM Mono', monospace", fontSize: '0.65rem', letterSpacing: '0.1em', textTransform: 'uppercase', color: '#8C8676' }}>Related:</span>
@@ -309,7 +357,7 @@ function NoteCard({ n, accentColor, onClick, editMode, onEditCard }) {
   return (
     <div onClick={editMode ? onEditCard : onClick} data-cursor-hover="true" style={{ position: 'relative', flex: '0 0 300px', borderRadius: 10, overflow: 'hidden', border: editMode ? `1px dashed ${accentColor}` : '1px solid rgba(255,255,255,0.1)', background: '#141210', cursor: 'pointer' }}>
       <div style={{ background: accentColor, padding: '9px 14px', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-        <span style={{ fontFamily: "'DM Mono', monospace", fontWeight: 700, fontSize: '0.65rem', letterSpacing: '0.05em', color: '#0A0A0A' }}>Note {n.num}</span>
+        <span style={{ fontFamily: "'DM Mono', monospace", fontWeight: 700, fontSize: '0.65rem', letterSpacing: '0.05em', color: '#0A0A0A' }}>{n.caseStudy ? 'Case Study' : `Note ${n.num}`}</span>
         <span style={{ display: 'flex', gap: 5 }}>
           <span style={{ width: 6, height: 6, borderRadius: '50%', background: 'rgba(10,10,10,0.4)' }} />
           <span style={{ width: 6, height: 6, borderRadius: '50%', background: 'rgba(10,10,10,0.4)' }} />
@@ -318,9 +366,11 @@ function NoteCard({ n, accentColor, onClick, editMode, onEditCard }) {
       </div>
       <div style={{ padding: '26px 20px 24px' }}>
         <div style={{ width: 44, height: 44, borderRadius: 8, background: 'rgba(255,255,255,0.06)', display: 'flex', alignItems: 'center', justifyContent: 'center', marginBottom: 20 }}>
-          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke={accentColor} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M3 3v18h18M7 14l4-5 3 3 5-7" /></svg>
+          {n.caseStudy
+            ? <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke={accentColor} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect x="3" y="7" width="18" height="13" rx="2" /><path d="M8 7V5a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2M3 13h18" /></svg>
+            : <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke={accentColor} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M3 3v18h18M7 14l4-5 3 3 5-7" /></svg>}
         </div>
-        <div style={{ fontFamily: "'Playfair Display', serif", fontWeight: 700, fontSize: '1.05rem', color: '#F2EEE6', marginBottom: 10, lineHeight: 1.25 }}>{n.title}</div>
+        <div style={{ fontFamily: "'Playfair Display', serif", fontWeight: 700, fontSize: '1.05rem', color: '#F2EEE6', marginBottom: 10, lineHeight: 1.25 }}>{n.cardTitle || n.title}</div>
         <div style={{ fontFamily: "'DM Sans', sans-serif", fontSize: '0.78rem', color: '#8C8676', lineHeight: 1.5, display: '-webkit-box', WebkitLineClamp: 3, WebkitBoxOrient: 'vertical', overflow: 'hidden' }}>{n.summary}</div>
       </div>
     </div>
@@ -334,7 +384,7 @@ function CardCarousel({ items, accentColor, onOpen, editMode, onEditCard }) {
     <div style={{ position: 'relative' }}>
       <span onClick={() => scrollBy(-1)} data-cursor-hover="true" className="carousel-arrow" style={{ position: 'absolute', left: -18, top: '50%', transform: 'translateY(-50%)', zIndex: 2, cursor: 'pointer', fontSize: '1.6rem', color: accentColor, background: '#141210', borderRadius: '50%', width: 34, height: 34, display: 'flex', alignItems: 'center', justifyContent: 'center', border: '1px solid rgba(255,255,255,0.1)' }}>‹</span>
       <div ref={scrollRef} className="carousel-track" style={{ display: 'flex', gap: 24, overflowX: 'auto', scrollSnapType: 'x mandatory', padding: '4px 2px 12px', scrollbarWidth: 'none' }}>
-        {items.map((n, i) => <div key={i} className="carousel-card" style={{ scrollSnapAlign: 'start' }}><NoteCard n={n} accentColor={accentColor} onClick={() => onOpen(n)} editMode={editMode} onEditCard={() => onEditCard(n)} /></div>)}
+        {items.map((n, i) => <div key={i} className="carousel-card" style={{ scrollSnapAlign: 'start', flex: '0 0 300px', display: 'flex' }}><NoteCard n={n} accentColor={accentColor} onClick={() => onOpen(n)} editMode={editMode} onEditCard={() => onEditCard(n)} /></div>)}
       </div>
       <span onClick={() => scrollBy(1)} data-cursor-hover="true" className="carousel-arrow" style={{ position: 'absolute', right: -18, top: '50%', transform: 'translateY(-50%)', zIndex: 2, cursor: 'pointer', fontSize: '1.6rem', color: accentColor, background: '#141210', borderRadius: '50%', width: 34, height: 34, display: 'flex', alignItems: 'center', justifyContent: 'center', border: '1px solid rgba(255,255,255,0.1)' }}>›</span>
     </div>
@@ -375,9 +425,10 @@ function QuantLabSection({ ink = '#0A0A0A', inkFaint = '#8C8C8C', inkMuted = '#4
     });
   }, [ready]);
 
-  const notes = RESEARCH_NOTES.map(n => (overrides[n.slug] ? { ...n, ...overrides[n.slug] } : n))
-    .concat(Object.keys(overrides).filter(slug => !RESEARCH_NOTES.some(n => n.slug === slug)).map(slug => overrides[slug]));
-  const allTags = Array.from(new Set(notes.flatMap(n => n.tags || [])));
+  const notes = ALL_NOTES.map(n => (overrides[n.slug] ? { ...n, ...overrides[n.slug] } : n))
+    .concat(Object.keys(overrides).filter(slug => !ALL_NOTES.some(n => n.slug === slug)).map(slug => overrides[slug]));
+  const allTags = Array.from(new Set(notes.flatMap(n => n.tags || [])))
+    .sort((a, b) => (b === 'Case Study') - (a === 'Case Study'));
   const filteredNotes = activeTag ? notes.filter(n => (n.tags || []).includes(activeTag)) : notes;
 
   useEffect(() => {

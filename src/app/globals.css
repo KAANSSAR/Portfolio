@@ -292,7 +292,7 @@ body[data-fullscreen-overlay='1'] .theme-toggle-wrap {
   /* About stat rows: the counter was 2.6rem in a 100px-wide column. */
   #about .stat-value {
     font-size: 1.75rem !important;
-    min-width: 62px !important;
+    min-width: 80px !important;
   }
 
   #about .stat-label {
@@ -658,3 +658,5 @@ body[data-fullscreen-overlay='1'] .theme-toggle-wrap {
 @media (max-width: 600px) {
   .post-body figure.float { float: none; width: 100%; max-width: 100%; margin: 1.6em 0; }
 }
+.deep-dive-body { animation: expFadeIn 0.35s ease; }
+.deep-dive-toggle:hover { border-color: rgba(245,197,24,0.5) !important; }
