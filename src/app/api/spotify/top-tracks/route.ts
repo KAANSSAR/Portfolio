@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { getAccessToken } from '@/lib/spotify';
+import { requireEditor } from '@/lib/requireEditor';
 
 const RANGES = new Set(['short_term', 'medium_term', 'long_term']);
 const DAY = 60 * 60 * 24;
@@ -14,7 +15,9 @@ export async function GET(req: NextRequest) {
   const range = req.nextUrl.searchParams.get('range') || 'short_term';
   if (!RANGES.has(range)) return NextResponse.json({ error: 'Bad range' }, { status: 400 });
 
-  const hit = memo.get(range);
+  // ?debug=1 (editor only) skips the caches and shows the real Spotify error.
+  const debug = req.nextUrl.searchParams.get('debug') === '1' && !requireEditor(req);
+  const hit = debug ? undefined : memo.get(range);
   if (hit && Date.now() - hit.at < DAY * 1000) return respond(hit.tracks);
 
   try {
@@ -23,7 +26,7 @@ export async function GET(req: NextRequest) {
       headers: { Authorization: `Bearer ${token}` },
       cache: 'no-store',
     });
-    if (!res.ok) throw new Error(`Spotify ${res.status}`);
+    if (!res.ok) throw new Error(`Spotify ${res.status}: ${(await res.text()).slice(0, 300)}`);
     const data = await res.json();
     const tracks: Track[] = (data.items || []).map((t: any) => ({
       name: t.name,
@@ -32,8 +35,16 @@ export async function GET(req: NextRequest) {
       url: t.external_urls?.spotify,
     }));
     memo.set(range, { at: Date.now(), tracks });
+    if (debug) return NextResponse.json({ ok: true, count: tracks.length, tracks }, { headers: { 'Cache-Control': 'no-store' } });
     return respond(tracks);
-  } catch {
+  } catch (err) {
+    console.error('[spotify/top-tracks]', err);
+    if (debug) {
+      return NextResponse.json({
+        error: String(err instanceof Error ? err.message : err),
+        env: { clientId: !!process.env.SPOTIFY_CLIENT_ID, clientSecret: !!process.env.SPOTIFY_CLIENT_SECRET, refreshToken: !!process.env.SPOTIFY_REFRESH_TOKEN },
+      }, { headers: { 'Cache-Control': 'no-store' } });
+    }
     // keep serving yesterday's list if Spotify is down or the token expired
     if (hit) return respond(hit.tracks);
     return NextResponse.json({ tracks: [] }, { headers: { 'Cache-Control': 's-maxage=300' } });
