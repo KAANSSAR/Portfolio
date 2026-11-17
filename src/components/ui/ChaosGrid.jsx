@@ -68,10 +68,10 @@ function ChaosGrid({
     }
 
     // Shooting stars: every 5-12s a random on-screen star lights up, then that
-    // glowing star itself streaks off at a shallow diagonal and burns out,
+    // glowing star itself streaks off at a shallow diagonal until it leaves the screen,
     // and a star fades back in at the spot it left.
     const reduceMotion = window.matchMedia?.('(prefers-reduced-motion: reduce)').matches;
-    const GLOW = 600, FLY = 1000, SETTLE = 900;
+    const GLOW = 600, SETTLE = 900, SPEED = 0.85, TAIL = 140; // speed in px per ms
     let shot = null;
     let nextShot = performance.now() + 3000 + Math.random() * 4000;
     function spawnShot(now) {
@@ -80,7 +80,12 @@ function ChaosGrid({
       const p = visible[Math.floor(Math.random() * visible.length)];
       const dir = Math.random() < 0.5 ? -1 : 1;
       const ang = (dir < 0 ? Math.PI - 0.45 : 0.45) + (Math.random() - 0.5) * 0.35;
-      shot = { p, start: now, dx: Math.cos(ang), dy: Math.sin(ang), dist: 260 + Math.random() * 220 };
+      const dx = Math.cos(ang), dy = Math.sin(ang);
+      // distance until the head is off-screen, plus the tail so it fully clears
+      const tx = dx > 0 ? (w - p.x) / dx : -p.x / dx;
+      const ty = dy > 0 ? (h - p.y) / dy : -p.y / dy;
+      const dist = Math.min(tx, ty) + TAIL + 20;
+      shot = { p, start: now, dx, dy, dist, fly: dist / SPEED + 200 };
     }
     const easeOut = k => 1 - Math.pow(1 - k, 3);
 
@@ -159,12 +164,12 @@ function ChaosGrid({
           if (e < GLOW) {
             // 1. the star lights up where it is
             glowDot(p.x, p.y, easeOut(e / GLOW), 1);
-          } else if (fe < FLY) {
-            // 2. the lit-up star itself flies off, dragging a tail, and burns out
-            const k = fe / FLY;
-            const head = easeOut(k) * shot.dist;
-            const tail = Math.max(0, head - 130 * Math.sin(Math.PI * Math.min(1, k * 1.2)) - 4);
-            const fade = 1 - Math.pow(k, 2);
+          } else if (fe < shot.fly) {
+            // 2. the lit-up star itself shoots off and keeps going until it leaves the screen
+            const ramp = Math.min(1, fe / 250); // quick launch, then constant speed
+            const head = fe * SPEED * (0.4 + 0.6 * ramp);
+            const tail = Math.max(0, head - TAIL * Math.min(1, head / TAIL));
+            const fade = 1;
             const hx = p.x + shot.dx * head, hy = p.y + shot.dy * head;
             const tx = p.x + shot.dx * tail, ty = p.y + shot.dy * tail;
             const g = ctx.createLinearGradient(tx * dpr, ty * dpr, hx * dpr, hy * dpr);
@@ -172,14 +177,14 @@ function ChaosGrid({
             g.addColorStop(1, col(0.85 * fade));
             ctx.strokeStyle = g; ctx.lineWidth = 1.8 * dpr; ctx.lineCap = 'round';
             ctx.beginPath(); ctx.moveTo(tx * dpr, ty * dpr); ctx.lineTo(hx * dpr, hy * dpr); ctx.stroke();
-            glowDot(hx, hy, 1 - k * 0.6, fade);
+            glowDot(hx, hy, 0.85, fade);
           } else {
             // 3. a fresh star fades back in at the original spot
-            const k = Math.min(1, (fe - FLY) / SETTLE);
+            const k = Math.min(1, (fe - shot.fly) / SETTLE);
             ctx.fillStyle = col(0.8 * k);
             ctx.beginPath(); ctx.arc(p.x * dpr, p.y * dpr, 1.6 * dpr, 0, Math.PI * 2); ctx.fill();
           }
-          if (fe >= FLY + SETTLE) {
+          if (fe >= shot.fly + SETTLE) {
             shot = null;
             nextShot = now + 5000 + Math.random() * 7000;
           }
