@@ -67,10 +67,11 @@ function ChaosGrid({
       window.addEventListener('mouseleave', onLeave);
     }
 
-    // Shooting stars: every 5-12s a random on-screen star swells and glows,
-    // fires a streak off at a shallow diagonal, then settles back to normal.
+    // Shooting stars: every 5-12s a random on-screen star lights up, then that
+    // glowing star itself streaks off at a shallow diagonal and burns out,
+    // and a star fades back in at the spot it left.
     const reduceMotion = window.matchMedia?.('(prefers-reduced-motion: reduce)').matches;
-    const GLOW = 650, FLY = 900, SETTLE = 700;
+    const GLOW = 600, FLY = 1000, SETTLE = 900;
     let shot = null;
     let nextShot = performance.now() + 3000 + Math.random() * 4000;
     function spawnShot(now) {
@@ -142,25 +143,24 @@ function ChaosGrid({
         if (shot) {
           const e = now - shot.start;
           const { p } = shot;
-          // the star itself: swell up, hold while it fires, then ease back down
-          let glow;
-          if (e < GLOW) glow = easeOut(e / GLOW);
-          else if (e < GLOW + FLY * 0.4) glow = 1;
-          else glow = Math.max(0, 1 - (e - GLOW - FLY * 0.4) / SETTLE);
-          const r = (1.6 + glow * 1.8) * dpr;
-          if (glow > 0) {
-            const halo = ctx.createRadialGradient(p.x * dpr, p.y * dpr, 0, p.x * dpr, p.y * dpr, r * 6);
-            halo.addColorStop(0, `rgba(${rgb[0]},${rgb[1]},${rgb[2]},${0.45 * glow * intensity})`);
-            halo.addColorStop(1, `rgba(${rgb[0]},${rgb[1]},${rgb[2]},0)`);
+          const col = a => `rgba(${rgb[0]},${rgb[1]},${rgb[2]},${a * intensity})`;
+          const glowDot = (x, y, g, a) => {
+            const r = (1.6 + g * 1.6) * dpr;
+            const halo = ctx.createRadialGradient(x * dpr, y * dpr, 0, x * dpr, y * dpr, r * 6);
+            halo.addColorStop(0, col(0.5 * g * a));
+            halo.addColorStop(1, col(0));
             ctx.fillStyle = halo;
-            ctx.beginPath(); ctx.arc(p.x * dpr, p.y * dpr, r * 6, 0, Math.PI * 2); ctx.fill();
-          }
-          ctx.fillStyle = `rgba(${rgb[0]},${rgb[1]},${rgb[2]},${(0.8 + 0.2 * glow) * intensity})`;
-          ctx.beginPath(); ctx.arc(p.x * dpr, p.y * dpr, r, 0, Math.PI * 2); ctx.fill();
-
-          // the streak, launched from the star once it has lit up
+            ctx.beginPath(); ctx.arc(x * dpr, y * dpr, r * 6, 0, Math.PI * 2); ctx.fill();
+            ctx.fillStyle = col((0.8 + 0.2 * g) * a);
+            ctx.beginPath(); ctx.arc(x * dpr, y * dpr, r, 0, Math.PI * 2); ctx.fill();
+          };
           const fe = e - GLOW;
-          if (fe > 0 && fe < FLY) {
+
+          if (e < GLOW) {
+            // 1. the star lights up where it is
+            glowDot(p.x, p.y, easeOut(e / GLOW), 1);
+          } else if (fe < FLY) {
+            // 2. the lit-up star itself flies off, dragging a tail, and burns out
             const k = fe / FLY;
             const head = easeOut(k) * shot.dist;
             const tail = Math.max(0, head - 130 * Math.sin(Math.PI * Math.min(1, k * 1.2)) - 4);
@@ -168,14 +168,18 @@ function ChaosGrid({
             const hx = p.x + shot.dx * head, hy = p.y + shot.dy * head;
             const tx = p.x + shot.dx * tail, ty = p.y + shot.dy * tail;
             const g = ctx.createLinearGradient(tx * dpr, ty * dpr, hx * dpr, hy * dpr);
-            g.addColorStop(0, `rgba(${rgb[0]},${rgb[1]},${rgb[2]},0)`);
-            g.addColorStop(1, `rgba(${rgb[0]},${rgb[1]},${rgb[2]},${0.9 * fade * intensity})`);
-            ctx.strokeStyle = g; ctx.lineWidth = 1.6 * dpr; ctx.lineCap = 'round';
+            g.addColorStop(0, col(0));
+            g.addColorStop(1, col(0.85 * fade));
+            ctx.strokeStyle = g; ctx.lineWidth = 1.8 * dpr; ctx.lineCap = 'round';
             ctx.beginPath(); ctx.moveTo(tx * dpr, ty * dpr); ctx.lineTo(hx * dpr, hy * dpr); ctx.stroke();
-            ctx.fillStyle = `rgba(${rgb[0]},${rgb[1]},${rgb[2]},${fade * intensity})`;
-            ctx.beginPath(); ctx.arc(hx * dpr, hy * dpr, 1.5 * dpr, 0, Math.PI * 2); ctx.fill();
+            glowDot(hx, hy, 1 - k * 0.6, fade);
+          } else {
+            // 3. a fresh star fades back in at the original spot
+            const k = Math.min(1, (fe - FLY) / SETTLE);
+            ctx.fillStyle = col(0.8 * k);
+            ctx.beginPath(); ctx.arc(p.x * dpr, p.y * dpr, 1.6 * dpr, 0, Math.PI * 2); ctx.fill();
           }
-          if (e > GLOW + FLY * 0.4 + SETTLE && fe >= FLY) {
+          if (fe >= FLY + SETTLE) {
             shot = null;
             nextShot = now + 5000 + Math.random() * 7000;
           }
