@@ -7,7 +7,7 @@ export const SITE = {
   location: 'Sydney, AU',
   university: 'University of Sydney',
   email: 'kanishka.sarkar@sydney.edu.au',
-  resumeUrl: '/resume.pdf',
+  resumeUrl: '/Kanishka_Sarkar_Resume.pdf',
   roles: [
     'Software Engineer (Honours)',
     'Focused on the Asian markets',
