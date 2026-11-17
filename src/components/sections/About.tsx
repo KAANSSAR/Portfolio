@@ -69,7 +69,7 @@ export default function About() {
         <span style={{ flex: 1, height: 1, maxWidth: 80, background: accent('#FF6B6B', isDark), opacity: 0.4 }} />
       </div>
 
-      <div className="resp-2col" style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 96, alignItems: 'start' }}>
+      <div className="resp-2col" style={{ display: 'grid', gridTemplateColumns: 'minmax(0, 1fr) minmax(0, 1fr)', gap: 96, alignItems: 'start' }}>
         <div>
           <h2 style={{ fontFamily: "'Playfair Display', serif", fontWeight: 700, lineHeight: 1.02, letterSpacing: '-0.02em', fontSize: 'clamp(40px,6vw,84px)', margin: '0 0 40px', color: T.ink }}>
             Building things
