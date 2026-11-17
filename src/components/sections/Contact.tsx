@@ -148,7 +148,7 @@ export default function Contact() {
                 </a>
               </div>
               <div className="contact-resume" style={{ marginLeft: -24 }}>
-                <HoldConfirm href={SITE.resumeUrl} download borderColor={T.gold} bg="#0A0A0A" textColor="#FFFFFF">
+                <HoldConfirm href={SITE.resumeUrl} download="Kanishka_Sarkar_Resume-2026.pdf" borderColor={T.gold} bg="#0A0A0A" textColor="#FFFFFF">
                   Download résumé
                 </HoldConfirm>
               </div>
