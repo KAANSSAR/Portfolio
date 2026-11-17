@@ -45,6 +45,7 @@ export default function PortfolioChrome() {
           mouseRadius={140}
           mouseStrength={1}
           intensity={isDark ? 1 : 0.5}
+          showLines={false}
         />
       </div>
 

@@ -18,6 +18,7 @@ function ChaosGrid({
   mouseRadius = 140,
   mouseStrength = 1,
   intensity = 1,
+  showLines = true,
 }) {
   const canvasRef = useRef(null);
 
@@ -88,6 +89,7 @@ function ChaosGrid({
         p.x = x; p.y = y;
       });
 
+      if (showLines) {
       ctx.strokeStyle = `rgba(${rgb[0]},${rgb[1]},${rgb[2]},0.2)`;
       ctx.lineWidth = 1 * dpr;
       const cd2 = connectionDistance * connectionDistance;
@@ -107,6 +109,7 @@ function ChaosGrid({
           }
         }
       }
+      }
 
       ctx.fillStyle = `rgba(${rgb[0]},${rgb[1]},${rgb[2]},${0.8 * intensity})`;
       particles.forEach(p => {
@@ -125,7 +128,7 @@ function ChaosGrid({
         window.removeEventListener('mouseleave', onLeave);
       }
     };
-  }, [gridPercentage, chaosStrength, particleColor, backgroundColor, connectionDistance, spacing, mouseInteraction, mouseRadius, mouseStrength, intensity]);
+  }, [gridPercentage, chaosStrength, particleColor, backgroundColor, connectionDistance, spacing, mouseInteraction, mouseRadius, mouseStrength, intensity, showLines]);
 
   return <canvas ref={canvasRef} style={{ position: 'fixed', inset: 0, width: '100%', height: '100%', pointerEvents: 'none' }} />;
 }
