@@ -46,6 +46,7 @@ export default function PortfolioChrome() {
           mouseStrength={1}
           intensity={isDark ? 1 : 0.5}
           showLines={false}
+          shootingStars
         />
       </div>
 

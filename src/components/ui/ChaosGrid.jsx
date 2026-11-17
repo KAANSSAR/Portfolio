@@ -19,6 +19,7 @@ function ChaosGrid({
   mouseStrength = 1,
   intensity = 1,
   showLines = true,
+  shootingStars = false,
 }) {
   const canvasRef = useRef(null);
 
@@ -65,6 +66,22 @@ function ChaosGrid({
       window.addEventListener('mousemove', onMove);
       window.addEventListener('mouseleave', onLeave);
     }
+
+    // Shooting stars: every 5-12s a random on-screen star swells and glows,
+    // fires a streak off at a shallow diagonal, then settles back to normal.
+    const reduceMotion = window.matchMedia?.('(prefers-reduced-motion: reduce)').matches;
+    const GLOW = 650, FLY = 900, SETTLE = 700;
+    let shot = null;
+    let nextShot = performance.now() + 3000 + Math.random() * 4000;
+    function spawnShot(now) {
+      const visible = particles.filter(p => p.x > w * 0.08 && p.x < w * 0.92 && p.y > h * 0.06 && p.y < h * 0.6);
+      if (!visible.length) return;
+      const p = visible[Math.floor(Math.random() * visible.length)];
+      const dir = Math.random() < 0.5 ? -1 : 1;
+      const ang = (dir < 0 ? Math.PI - 0.45 : 0.45) + (Math.random() - 0.5) * 0.35;
+      shot = { p, start: now, dx: Math.cos(ang), dy: Math.sin(ang), dist: 260 + Math.random() * 220 };
+    }
+    const easeOut = k => 1 - Math.pow(1 - k, 3);
 
     let t = 0;
     function draw() {
@@ -113,10 +130,57 @@ function ChaosGrid({
 
       ctx.fillStyle = `rgba(${rgb[0]},${rgb[1]},${rgb[2]},${0.8 * intensity})`;
       particles.forEach(p => {
+        if (shot && p === shot.p) return;
         ctx.beginPath();
         ctx.arc(p.x * dpr, p.y * dpr, 1.6 * dpr, 0, Math.PI * 2);
         ctx.fill();
       });
+
+      if (shootingStars && !reduceMotion) {
+        const now = performance.now();
+        if (!shot && now > nextShot && !document.hidden) spawnShot(now);
+        if (shot) {
+          const e = now - shot.start;
+          const { p } = shot;
+          // the star itself: swell up, hold while it fires, then ease back down
+          let glow;
+          if (e < GLOW) glow = easeOut(e / GLOW);
+          else if (e < GLOW + FLY * 0.4) glow = 1;
+          else glow = Math.max(0, 1 - (e - GLOW - FLY * 0.4) / SETTLE);
+          const r = (1.6 + glow * 1.8) * dpr;
+          if (glow > 0) {
+            const halo = ctx.createRadialGradient(p.x * dpr, p.y * dpr, 0, p.x * dpr, p.y * dpr, r * 6);
+            halo.addColorStop(0, `rgba(${rgb[0]},${rgb[1]},${rgb[2]},${0.45 * glow * intensity})`);
+            halo.addColorStop(1, `rgba(${rgb[0]},${rgb[1]},${rgb[2]},0)`);
+            ctx.fillStyle = halo;
+            ctx.beginPath(); ctx.arc(p.x * dpr, p.y * dpr, r * 6, 0, Math.PI * 2); ctx.fill();
+          }
+          ctx.fillStyle = `rgba(${rgb[0]},${rgb[1]},${rgb[2]},${(0.8 + 0.2 * glow) * intensity})`;
+          ctx.beginPath(); ctx.arc(p.x * dpr, p.y * dpr, r, 0, Math.PI * 2); ctx.fill();
+
+          // the streak, launched from the star once it has lit up
+          const fe = e - GLOW;
+          if (fe > 0 && fe < FLY) {
+            const k = fe / FLY;
+            const head = easeOut(k) * shot.dist;
+            const tail = Math.max(0, head - 130 * Math.sin(Math.PI * Math.min(1, k * 1.2)) - 4);
+            const fade = 1 - Math.pow(k, 2);
+            const hx = p.x + shot.dx * head, hy = p.y + shot.dy * head;
+            const tx = p.x + shot.dx * tail, ty = p.y + shot.dy * tail;
+            const g = ctx.createLinearGradient(tx * dpr, ty * dpr, hx * dpr, hy * dpr);
+            g.addColorStop(0, `rgba(${rgb[0]},${rgb[1]},${rgb[2]},0)`);
+            g.addColorStop(1, `rgba(${rgb[0]},${rgb[1]},${rgb[2]},${0.9 * fade * intensity})`);
+            ctx.strokeStyle = g; ctx.lineWidth = 1.6 * dpr; ctx.lineCap = 'round';
+            ctx.beginPath(); ctx.moveTo(tx * dpr, ty * dpr); ctx.lineTo(hx * dpr, hy * dpr); ctx.stroke();
+            ctx.fillStyle = `rgba(${rgb[0]},${rgb[1]},${rgb[2]},${fade * intensity})`;
+            ctx.beginPath(); ctx.arc(hx * dpr, hy * dpr, 1.5 * dpr, 0, Math.PI * 2); ctx.fill();
+          }
+          if (e > GLOW + FLY * 0.4 + SETTLE && fe >= FLY) {
+            shot = null;
+            nextShot = now + 5000 + Math.random() * 7000;
+          }
+        }
+      }
     }
     draw();
 
@@ -128,7 +192,7 @@ function ChaosGrid({
         window.removeEventListener('mouseleave', onLeave);
       }
     };
-  }, [gridPercentage, chaosStrength, particleColor, backgroundColor, connectionDistance, spacing, mouseInteraction, mouseRadius, mouseStrength, intensity, showLines]);
+  }, [gridPercentage, chaosStrength, particleColor, backgroundColor, connectionDistance, spacing, mouseInteraction, mouseRadius, mouseStrength, intensity, showLines, shootingStars]);
 
   return <canvas ref={canvasRef} style={{ position: 'fixed', inset: 0, width: '100%', height: '100%', pointerEvents: 'none' }} />;
 }
