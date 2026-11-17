@@ -126,6 +126,13 @@ body[data-fullscreen-overlay='1'] .theme-toggle-wrap {
     display: none !important;
   }
 
+  /* The globe's column becomes a normal block so the player sits under the text. */
+  .hero-side {
+    position: static !important;
+    transform: none !important;
+    width: 100% !important;
+  }
+
   /* Recentred rather than hidden: at 12% from the left it collided with the
      hero text, but centred behind everything it works as a backdrop. */
   .cube-halo {

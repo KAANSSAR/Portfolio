@@ -21,20 +21,6 @@ export default function Hero() {
         justifyContent: 'center', padding: '0 4rem', overflow: 'hidden',
       }}
     >
-      <div className="hero-globe" style={{ position: 'absolute', top: '48%', right: '2%', transform: 'translateY(-50%)', width: 340, height: 340, borderRadius: '50%', overflow: 'visible', pointerEvents: 'auto' }}>
-        <div style={{ position: 'absolute', inset: 0, borderRadius: '50%', background: T.bg }} />
-        <div style={{ position: 'relative', width: 520, height: 520, left: -90, top: -90 }}>
-          <OrbitDotGlobe
-            autoRotate
-            rotationSpeed={0.009}
-            radius={2}
-            dotColor={isDark ? '#ffffff' : '#121110'}
-            oceanDotColor={isDark ? '#ffffff25' : '#1211102e'}
-            lightMode={!isDark}
-          />
-        </div>
-      </div>
-
       <div className="hero-content" style={{ position: 'relative', zIndex: 2, maxWidth: 900 }}>
         <div className="hero-location" style={{ display: 'flex', alignItems: 'center', gap: 16, marginBottom: 24, fontFamily: "'DM Mono', monospace", fontSize: '0.7rem', letterSpacing: '0.2em', textTransform: 'uppercase', color: T.gold }}>
           <span style={{ display: 'block', width: 40, height: 1, background: T.gold }} />
@@ -57,7 +43,25 @@ export default function Hero() {
           />
         </div>
 
-        <div className="hero-player" style={{ width: 330, marginLeft: -4 }}>
+      </div>
+
+      {/* Right-hand column: globe with the music player under it. On mobile the
+          globe hides and the player drops into the flow under the hero text. */}
+      <div className="hero-side" style={{ position: 'absolute', top: '48%', right: '2%', transform: 'translateY(-50%)', width: 340, display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 40, zIndex: 1 }}>
+        <div className="hero-globe" style={{ position: 'relative', width: 340, height: 340, borderRadius: '50%', overflow: 'visible', pointerEvents: 'auto' }}>
+          <div style={{ position: 'absolute', inset: 0, borderRadius: '50%', background: T.bg }} />
+          <div style={{ position: 'relative', width: 520, height: 520, left: -90, top: -90 }}>
+            <OrbitDotGlobe
+              autoRotate
+              rotationSpeed={0.009}
+              radius={2}
+              dotColor={isDark ? '#ffffff' : '#121110'}
+              oceanDotColor={isDark ? '#ffffff25' : '#1211102e'}
+              lightMode={!isDark}
+            />
+          </div>
+        </div>
+        <div className="hero-player" style={{ width: 330, position: 'relative', zIndex: 2 }}>
           <GlassyMusicPlayer tracks={TRACKS} ink={T.ink} dim={`rgba(${T.inkRgb},0.55)`} isDark={isDark} />
         </div>
       </div>
