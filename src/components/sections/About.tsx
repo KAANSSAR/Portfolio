@@ -4,6 +4,7 @@ import React, { useEffect, useRef, useState } from 'react';
 import { useTheme } from '@/context/ThemeContext';
 import { ABOUT_PARAGRAPHS, SKILLS, STATS, GLITCH_COLORS } from '@/lib/data';
 import { accent } from '@/lib/accent';
+import TopTracks from '@/components/ui/TopTracks';
 
 const EASE_OUT_EXPO = (p: number) => (p >= 1 ? 1 : 1 - Math.pow(2, -10 * p));
 
@@ -114,6 +115,8 @@ export default function About() {
           </div>
         </div>
       </div>
+
+      <TopTracks />
     </section>
   );
 }
