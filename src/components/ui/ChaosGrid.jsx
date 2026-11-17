@@ -67,7 +67,7 @@ function ChaosGrid({
       window.addEventListener('mouseleave', onLeave);
     }
 
-    // Shooting stars: every 5-12s a random on-screen star lights up, then that
+    // Shooting stars: every 3.5-8.5s a random on-screen star lights up, then that
     // glowing star itself streaks off at a shallow diagonal until it leaves the screen,
     // and a star fades back in at the spot it left.
     const reduceMotion = window.matchMedia?.('(prefers-reduced-motion: reduce)').matches;
@@ -186,7 +186,7 @@ function ChaosGrid({
           }
           if (fe >= shot.fly + SETTLE) {
             shot = null;
-            nextShot = now + 5000 + Math.random() * 7000;
+            nextShot = now + 3500 + Math.random() * 5000;
           }
         }
       }
