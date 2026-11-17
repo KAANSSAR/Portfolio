@@ -6,7 +6,7 @@ import React, { useState, useEffect, useRef, useCallback, useMemo } from 'react'
 
 const GREEK = 'ΑΒΓΔΕΖΗΘΙΚΛΜΝΞΟΠΡΣΤΥΦΧΨΩαβγδεζηθικλμνξοπρστυφχψω';
 const EGYPT = '𓀀𓁀𓂀𓃀𓄿𓅓𓆣𓇋𓈖𓉐𓊪𓋴𓌳𓍯𓎡𓏏𓐍𓁶𓆗';
-const POOL = (GREEK + EGYPT).split('');
+const POOL = Array.from(GREEK + EGYPT); // Array.from keeps the hieroglyphs whole (split('') cut them in half)
 const COLORS = ['#FF6B6B', '#4ECDC4', '#FFE66D', '#A78BFA', '#FF8C42', '#5FD068', '#FF5DA2'];
 
 function randChar() { return POOL[Math.floor(Math.random() * POOL.length)]; }

@@ -409,6 +409,11 @@ body[data-fullscreen-overlay='1'] .theme-toggle-wrap {
     transform-origin: bottom left;
   }
 
+  .fab-resume {
+    transform: translateX(-50%) scale(0.8) !important;
+    transform-origin: bottom center;
+  }
+
   .unfold-menu {
     transform: scale(0.85);
     transform-origin: bottom right;

@@ -17,6 +17,7 @@ const DynamicInfo = dynamic(() => import('./ui/DynamicInfo'), { ssr: false });
 const UnfoldMenu = dynamic(() => import('./ui/UnfoldMenu'), { ssr: false });
 const ThemeChanger = dynamic(() => import('./ui/ThemeChanger'), { ssr: false });
 const SocialShareFAB = dynamic(() => import('./ui/SocialShareFAB'), { ssr: false });
+const ResumeFAB = dynamic(() => import('./ui/ResumeFAB'), { ssr: false });
 
 const UNFOLD_ITEMS = [...NAV_LINKS].reverse().concat([{ label: 'Home', href: '#hero' }]);
 
@@ -89,6 +90,7 @@ export default function PortfolioChrome() {
       </div>
 
       <SocialShareFAB ink={T.ink} bg={T.bg} itemGap={60} isDark={isDark} />
+      <ResumeFAB href={SITE.resumeUrl} filename="Kanishka_Sarkar_Resume-2026.pdf" ink={T.ink} isDark={isDark} />
 
       <CustomCursor />
     </>
