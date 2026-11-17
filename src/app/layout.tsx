@@ -11,16 +11,35 @@ export const viewport: Viewport = {
   viewportFit: 'cover',
 };
 
+const TITLE = 'Kanishka Sarkar Portfolio';
+const DESCRIPTION =
+  'Final-year Software Engineering (Honours) student at the University of Sydney, building agentic AI systems and quantitative finance tools.';
+const SITE_URL = 'https://www.kanishka-sarkar.com';
+
 export const metadata: Metadata = {
-  title: `${SITE.name} | Software Engineer`,
-  description:
-    'Final-year Software Engineering (Honours) student at the University of Sydney, building agentic AI systems and quantitative finance tools.',
+  metadataBase: new URL(SITE_URL),
+  title: TITLE,
+  applicationName: TITLE,
+  description: DESCRIPTION,
+  alternates: { canonical: '/' },
+  openGraph: { title: TITLE, siteName: TITLE, description: DESCRIPTION, url: SITE_URL, type: 'website' },
+  twitter: { card: 'summary', title: TITLE, description: DESCRIPTION },
+};
+
+// Tells Google the site's name, which it shows above the link in results.
+const siteJsonLd = {
+  '@context': 'https://schema.org',
+  '@type': 'WebSite',
+  name: TITLE,
+  alternateName: SITE.name,
+  url: SITE_URL,
 };
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
     <html lang="en">
       <head>
+        <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(siteJsonLd) }} />
         <link rel="preconnect" href="https://fonts.googleapis.com" />
         <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
         <link
