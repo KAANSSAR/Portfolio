@@ -33,7 +33,7 @@ export default function Hero() {
         <h1 style={{ position: 'absolute', width: 1, height: 1, overflow: 'hidden', clip: 'rect(0,0,0,0)' }}>{SITE.name}</h1>
         <HeroNameCanvas />
 
-        <div style={{ display: 'flex', alignItems: 'center', gap: 20, marginTop: 20, marginBottom: 44, flexWrap: 'wrap' }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: 20, marginTop: 4, marginBottom: 44, flexWrap: 'wrap' }}>
           <span className="hero-currently" style={{ fontFamily: "'DM Mono', monospace", fontSize: '0.68rem', letterSpacing: '0.15em', textTransform: 'uppercase', color: T.inkFaint }}>Currently:</span>
           <GlitchText
             words={SHORT_ROLES}
