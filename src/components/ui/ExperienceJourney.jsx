@@ -257,7 +257,11 @@ function ExperienceJourney({ entries = [], accent = '#C4962A', bg = '#0A0908', t
         const totalSpan = Math.max(1, (n - 1) * STEP_Y);
         const revIndex = (n - 1) * (1 - progress);
         checkNodeReach(revIndex);
-        camera.position.set(0, -1.9, 6.5);
+        // On a phone the live node sat about 20% from the top, so it only
+        // finished appearing once it was nearly off the screen. Raise the
+        // camera so it lands just above the middle instead.
+        const phone = canvas.clientWidth < 700;
+        camera.position.set(0, phone ? -0.45 : -1.9, 6.5);
         camera.rotation.set(0, 0, 0);
         const xs = xSqueeze();
         rig.scale.x = xs;
@@ -304,7 +308,8 @@ function ExperienceJourney({ entries = [], accent = '#C4962A', bg = '#0A0908', t
         const labelEls = labelsRef.current ? labelsRef.current.children : [];
         camera.updateMatrixWorld(true);
         nodes.forEach((nd, i) => {
-          const diff = Math.min(2 * Math.max(revIndex - i, 0), 1);
+          // a slower fade on phones so a node starts appearing lower down
+          const diff = Math.min((phone ? 1.25 : 2) * Math.max(revIndex - i, 0), 1);
           const active = 1 - diff;
           nd.mesh.material.opacity = active;
           nd.halo.material.opacity = 0.3 * active;
