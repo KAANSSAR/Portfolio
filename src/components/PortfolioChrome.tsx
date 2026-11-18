@@ -31,6 +31,34 @@ export default function PortfolioChrome() {
     return () => clearInterval(id);
   }, []);
 
+  // On phones and tablets the cube floats behind the About text, so blur it
+  // while About is over it (see body[data-cube-behind] in globals.css).
+  React.useEffect(() => {
+    let raf = 0;
+    const check = () => {
+      raf = 0;
+      const cube = document.querySelector('.cube-halo');
+      const about = document.getElementById('about');
+      if (!cube || !about) return;
+      const c = cube.getBoundingClientRect();
+      const a = about.getBoundingClientRect();
+      const cy = c.top + c.height / 2;
+      const behind = cy > a.top && cy < a.bottom;
+      if (behind) document.body.dataset.cubeBehind = '1';
+      else delete document.body.dataset.cubeBehind;
+    };
+    const onScroll = () => { if (!raf) raf = requestAnimationFrame(check); };
+    check();
+    window.addEventListener('scroll', onScroll, { passive: true });
+    window.addEventListener('resize', onScroll);
+    return () => {
+      window.removeEventListener('scroll', onScroll);
+      window.removeEventListener('resize', onScroll);
+      cancelAnimationFrame(raf);
+      delete document.body.dataset.cubeBehind;
+    };
+  }, []);
+
   return (
     <>
       {/* Fixed particle-grid background */}
