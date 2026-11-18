@@ -16,8 +16,17 @@ export default function Logo({ onClick }: { onClick?: () => void }) {
       if (lastRef.current == null) lastRef.current = t;
       const dt = t - lastRef.current;
       lastRef.current = t;
-      speedRef.current += (0 - speedRef.current) * 0.02;
-      degRef.current += speedRef.current * dt * 0.06;
+      if (speedRef.current > 1.2) {
+        // spinning after a click: slow down gradually
+        speedRef.current += (0 - speedRef.current) * 0.02;
+        degRef.current += speedRef.current * dt * 0.06;
+      } else {
+        // then settle flat on the next face (every 180deg shows "KS")
+        speedRef.current = 0;
+        const target = Math.ceil(degRef.current / 180 - 0.001) * 180;
+        const gap = target - degRef.current;
+        degRef.current = Math.abs(gap) < 0.05 ? target : degRef.current + gap * Math.min(1, dt * 0.008);
+      }
       if (spinRef.current) spinRef.current.style.transform = `rotateY(${degRef.current}deg)`;
       raf = requestAnimationFrame(tick);
     };
