@@ -159,7 +159,21 @@ function ExperienceJourney({ entries = [], accent = '#C4962A', bg = '#0A0908', t
       // on desktop (fov is vertical, so a tall aspect ratio shrinks it), which
       // pushed the +/-1.9 nodes off both edges. Squeeze the thread inward
       // instead of changing the alternating left/right layout.
-      const xSqueeze = () => (canvas.clientWidth < 700 ? 0.4 : 1);
+      // Tablets in portrait (iPad Pro, Surface) are wider than a phone but much
+      // taller than a laptop, so the same problem pushed the outer nodes and
+      // the thread past the edges there too. Work the squeeze out from the
+      // visible width: keep each node close enough to the middle that its
+      // 300px label still fits outside it.
+      const xSqueeze = () => {
+        const w = canvas.clientWidth, h = canvas.clientHeight;
+        if (w < 700) return 0.4;
+        if (!h) return 1;
+        const halfW = Math.tan((camera.fov / 2) * Math.PI / 180) * 6.5 * (w / h);
+        const labelW = w <= 860 ? w * 0.44 : Math.min(300, w * 0.4);
+        const room = 1 - (labelW + 40 + 24 + 20) / (w / 2); // label + nudge + margin + slack
+        const f = Math.max(0.22, Math.min(0.4, room));
+        return Math.min(1, (halfW * f) / 1.9);
+      };
 
       const rawPts = buildCurvePoints(entries.length).map(p => new THREE.Vector3(p.x, p.y, p.z));
       const curve = new THREE.CatmullRomCurve3(rawPts, false, 'catmullrom', 0.5);
@@ -260,7 +274,8 @@ function ExperienceJourney({ entries = [], accent = '#C4962A', bg = '#0A0908', t
         // On a phone the live node sat about 20% from the top, so it only
         // finished appearing once it was nearly off the screen. Raise the
         // camera so it lands just above the middle instead.
-        const phone = canvas.clientWidth < 700;
+        // phones, and tablets held upright (taller than wide)
+        const phone = canvas.clientWidth < 700 || canvas.clientHeight > canvas.clientWidth;
         camera.position.set(0, phone ? -0.45 : -1.9, 6.5);
         camera.rotation.set(0, 0, 0);
         const xs = xSqueeze();
@@ -345,7 +360,8 @@ function ExperienceJourney({ entries = [], accent = '#C4962A', bg = '#0A0908', t
           let y = (-v.y * 0.5 + 0.5) * canvas.clientHeight + 30;
           // A fixed 300px clamp on a 390px screen pinned both sides to the
           // middle, which is what collapsed the left/right alternation.
-          const labelW = narrow ? Math.min(300, canvas.clientWidth * 0.44) : 300;
+          // use the label's real width: CSS narrows it on smaller screens
+          const labelW = el.offsetWidth || (narrow ? Math.min(300, canvas.clientWidth * 0.44) : 300);
           const labelH = narrow ? 120 : 140;
           const margin = narrow ? 10 : 24;
           if (i % 2 === 0) x = Math.max(labelW + margin, x);
