@@ -84,7 +84,7 @@ body[data-fullscreen-overlay='1'] .theme-toggle-wrap {
    these overrides need !important to win. Targeting by section id and a few
    helper classes keeps the diff in the components themselves minimal.
    --------------------------------------------------------------------------- */
-@media (max-width: 860px) {
+@media (max-width: 860px), (any-pointer: coarse) and (max-width: 1440px) {
   /* Side padding: 4rem of gutter leaves almost nothing on a 375px screen. */
   #hero,
   #about,
@@ -186,7 +186,7 @@ body[data-fullscreen-overlay='1'] .theme-toggle-wrap {
 
 /* FlowingMenu on touch: rows get an explicit height since the wrapper is no
    longer a fixed 640px for flex:1 to divide up. */
-@media (max-width: 860px) {
+@media (max-width: 860px), (any-pointer: coarse) and (max-width: 1440px) {
   .fm-menu__item {
     flex: none !important;
     min-height: 104px !important;
@@ -208,7 +208,7 @@ body[data-fullscreen-overlay='1'] .theme-toggle-wrap {
 
 /* Fullscreen article readers (Quant Lab notes and Blog posts) on small screens.
    The wide side padding and fixed-width media inside them overflow otherwise. */
-@media (max-width: 860px) {
+@media (max-width: 860px), (any-pointer: coarse) and (max-width: 1440px) {
   .reader-body {
     padding-left: 1.1rem !important;
     padding-right: 1.1rem !important;
@@ -258,7 +258,7 @@ body[data-fullscreen-overlay='1'] .theme-toggle-wrap {
    ~390px screen they pin to that minimum and read far too large. These set
    explicit phone sizes instead.
    --------------------------------------------------------------------------- */
-@media (max-width: 860px) {
+@media (max-width: 860px), (any-pointer: coarse) and (max-width: 1440px) {
   #about h2,
   #experience h2,
   #projects h2,
@@ -359,7 +359,7 @@ body[data-fullscreen-overlay='1'] .theme-toggle-wrap {
 /* ---------------------------------------------------------------------------
    Mobile chrome and article alignment
    --------------------------------------------------------------------------- */
-@media (max-width: 860px) {
+@media (max-width: 860px), (any-pointer: coarse) and (max-width: 1440px) {
   /* The toggle sat at right:88, which put it underneath the notch on a narrow
      screen and clipped it against the edge. */
   .theme-toggle-btn {
@@ -441,7 +441,7 @@ body[data-fullscreen-overlay='1'] .theme-toggle-wrap {
    just a fixed 300px so several showed at once. One card per screen, with the
    next one peeking so it reads as swipeable.
    --------------------------------------------------------------------------- */
-@media (max-width: 860px) {
+@media (max-width: 860px), (any-pointer: coarse) and (max-width: 1440px) {
   .carousel-track {
     gap: 14px !important;
     scroll-padding-left: 0;
@@ -511,7 +511,7 @@ body[data-fullscreen-overlay='1'] .theme-toggle-wrap {
 /* ---------------------------------------------------------------------------
    Hero centring, share button alignment, experience labels
    --------------------------------------------------------------------------- */
-@media (max-width: 860px) {
+@media (max-width: 860px), (any-pointer: coarse) and (max-width: 1440px) {
   .hero-content {
     text-align: center;
     margin-left: auto;
@@ -566,7 +566,7 @@ body[data-fullscreen-overlay='1'] .theme-toggle-wrap {
   }
 }
 
-@media (max-width: 860px) {
+@media (max-width: 860px), (any-pointer: coarse) and (max-width: 1440px) {
   /* .fm-menu__item carries text-align:center, which centred the second line of
      wrapped project titles. */
   .fm-menu__item-link > span:first-child {
@@ -674,6 +674,11 @@ body[data-fullscreen-overlay='1'] .theme-toggle-wrap {
 .deep-dive-toggle:hover { border-color: rgba(245,197,24,0.5) !important; }
 
 /* ---------------------------------------------------------------------------
+   Note: the "phone" layout below applies to anything up to 860px wide, and
+   also to touchscreens (iPad Pro, Surface Pro) up to 1440px wide.
+   --------------------------------------------------------------------------- */
+
+/* ---------------------------------------------------------------------------
    Wide monitors: the page stops growing at --frame and sits centred, with the
    star background still filling the screen. The fixed buttons and the cube
    move in by --gutter so they line up with the frame, not the screen edges.
@@ -690,7 +695,7 @@ body[data-fullscreen-overlay='1'] .theme-toggle-wrap {
   margin-right: auto;
 }
 
-@media (min-width: 861px) {
+@media (min-width: 1681px) {
   .ks-logo { left: calc(var(--gutter) + 30px) !important; }
   .theme-toggle-btn { right: calc(var(--gutter) + 88px) !important; }
   .unfold-menu { right: calc(var(--gutter) + 28px) !important; }
@@ -711,7 +716,7 @@ body[data-reader='research'] .ks-logo div {
   color: #F2EEE6 !important;
 }
 
-@media (max-width: 860px) {
+@media (max-width: 860px), (any-pointer: coarse) and (max-width: 1440px) {
   /* Under the KS mark rather than beside it, clear of the notch. */
   .reader-back {
     top: 60px !important;
@@ -739,7 +744,7 @@ body[data-reader='research'] .ks-logo div {
   transition: filter 0.45s ease, opacity 0.45s ease;
 }
 
-@media (hover: none), (max-width: 860px) {
+@media (hover: none), (max-width: 860px), (any-pointer: coarse) and (max-width: 1440px) {
   body[data-cube-behind] .cube-halo > div {
     filter: blur(5px);
     opacity: 0.45 !important;

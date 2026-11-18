@@ -19,7 +19,7 @@ export default function HeroNameCanvas() {
   // orientation change re-centres the name without rebuilding on every resize.
   const [centred, setCentred] = useState(false);
   useEffect(() => {
-    const mq = window.matchMedia('(max-width: 860px)');
+    const mq = window.matchMedia('(max-width: 860px), (any-pointer: coarse) and (max-width: 1440px)');
     const sync = () => setCentred(mq.matches);
     sync();
     mq.addEventListener('change', sync);

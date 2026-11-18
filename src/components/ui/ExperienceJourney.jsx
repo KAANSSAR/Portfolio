@@ -169,7 +169,7 @@ function ExperienceJourney({ entries = [], accent = '#C4962A', bg = '#0A0908', t
         if (w < 700) return 0.4;
         if (!h) return 1;
         const halfW = Math.tan((camera.fov / 2) * Math.PI / 180) * 6.5 * (w / h);
-        const labelW = w <= 860 ? w * 0.44 : Math.min(300, w * 0.4);
+        const labelW = window.matchMedia('(max-width: 860px), (any-pointer: coarse) and (max-width: 1440px)').matches ? w * 0.44 : Math.min(300, w * 0.4);
         const room = 1 - (labelW + 40 + 24 + 20) / (w / 2); // label + nudge + margin + slack
         const f = Math.max(0.22, Math.min(0.4, room));
         return Math.min(1, (halfW * f) / 1.9);
