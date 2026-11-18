@@ -407,7 +407,7 @@ function ExperienceJourney({ entries = [], accent = '#C4962A', bg = '#0A0908', t
   }, []);
 
   return (
-    <div ref={wrapRef} style={{ position: 'relative', height: `${Math.max(180, entries.length * 34)}vh` }}>
+    <div ref={wrapRef} className="exp-wrap" style={{ position: 'relative', height: `${Math.max(180, entries.length * 34)}vh` }}>
       <div ref={stageRef} style={{ position: 'absolute', top: 0, left: 0, width: '100%', height: '100vh', overflow: 'hidden', background: 'transparent', zIndex: 5, pointerEvents: 'none' }}>
         <canvas ref={canvasRef} style={{ width: '100%', height: '100%', display: 'block' }} />
         <div ref={astroRef} style={{ position: 'absolute', top: 0, left: 0, width: 40, height: 40, pointerEvents: 'none', backgroundImage: "url('/images/astronaut-pet-sprite.png')", backgroundSize: '160px 160px', backgroundRepeat: 'no-repeat', imageRendering: 'pixelated', filter: 'drop-shadow(0 0 6px rgba(255,255,255,0.35))' }} />

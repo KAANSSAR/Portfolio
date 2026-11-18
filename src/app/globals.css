@@ -745,3 +745,14 @@ body[data-reader='research'] .ks-logo div {
     opacity: 0.45 !important;
   }
 }
+
+/* Phones: the journey camera is raised so the live node sits mid-screen (see
+   ExperienceJourney), which left a tall empty band above the first node and
+   below the last. Pull the journey up into the heading and let Projects
+   start sooner. The canvas is transparent, so the overlap doesn't show. */
+@media (max-width: 699px) {
+  .exp-wrap {
+    margin-top: -25vh;
+    margin-bottom: -30vh;
+  }
+}
