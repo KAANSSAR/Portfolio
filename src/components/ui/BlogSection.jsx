@@ -123,6 +123,15 @@ function BlogSection({
     !loading && posts.length > 0,
   );
   useScrollLock(!!(activePost || editing));
+  // floating Back / KS / back-to-top controls (see ReaderNav)
+  const reading = !!(activePost && !editing);
+  useEffect(() => {
+    if (!reading) return;
+    document.body.dataset.reader = 'writing';
+    const close = () => closeReader();
+    window.addEventListener('reader:close', close);
+    return () => { window.removeEventListener('reader:close', close); delete document.body.dataset.reader; };
+  }, [reading, closeReader]);
   const [authed, setAuthed] = useState(false);
   const [pwPrompt, setPwPrompt] = useState(false);
   const [pwInput, setPwInput] = useState('');
@@ -261,12 +270,12 @@ function BlogSection({
       )}
 
       {activePost && !editing && (
-        <div style={{ position: 'fixed', inset: 0, zIndex: 300, background: bg, overflowY: 'auto', overscrollBehavior: 'contain' }}>
+        <div className="reader-scroll" style={{ position: 'fixed', inset: 0, zIndex: 300, background: bg, overflowY: 'auto', overscrollBehavior: 'contain' }}>
           <div className="reader-body" style={{ maxWidth: 760, margin: '0 auto', padding: '80px 32px 120px',
             '--pb-ink': ink, '--pb-muted': inkMuted, '--pb-faint': inkFaint, '--pb-line': line,
             '--pb-head': `color-mix(in srgb, ${ink} 4%, transparent)`, '--pb-accent': labelColor }}>
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 40 }}>
-              <span onClick={closeReader} data-cursor-hover="true" style={{ cursor: 'pointer', fontFamily: "'DM Mono', monospace", fontSize: '0.7rem', letterSpacing: '0.1em', textTransform: 'uppercase', color: inkFaint }}>← Back</span>
+              <span />{/* Back is the floating pill now (ReaderNav) */}
               {authed && (
                 <span style={{ display: 'flex', gap: 16 }}>
                   <span onClick={() => openEdit(activePost)} data-cursor-hover="true" style={{ cursor: 'pointer', fontFamily: "'DM Mono', monospace", fontSize: '0.65rem', color: accentColor }}>Edit</span>

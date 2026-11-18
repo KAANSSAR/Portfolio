@@ -300,10 +300,10 @@ function ResearchCaseStudy({ slug, onClose, note, authed, onEdit }) {
   if (!note) return null;
   if (note.format === 'simple') {
     return (
-      <div style={{ position: 'fixed', inset: 0, zIndex: 320, background: '#151210', overflowY: 'auto', overscrollBehavior: 'contain' }}>
+      <div className="reader-scroll" style={{ position: 'fixed', inset: 0, zIndex: 320, background: '#151210', overflowY: 'auto', overscrollBehavior: 'contain' }}>
         <div className="reader-body" style={{ maxWidth: 780, margin: '0 auto', padding: '64px 48px 100px' }}>
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 32 }}>
-            <span onClick={onClose} data-cursor-hover="true" style={{ cursor: 'pointer', fontFamily: "'DM Mono', monospace", fontSize: '0.7rem', letterSpacing: '0.1em', textTransform: 'uppercase', color: '#8C8676' }}>← Back to Quant Lab</span>
+            <span />{/* Back is the floating pill now (ReaderNav) */}
             {authed && <span onClick={onEdit} data-cursor-hover="true" style={{ cursor: 'pointer', fontFamily: "'DM Mono', monospace", fontSize: '0.65rem', letterSpacing: '0.1em', textTransform: 'uppercase', color: '#F5C518' }}>Edit</span>}
           </div>
           {note.tags && note.tags.length > 0 && (
@@ -320,10 +320,10 @@ function ResearchCaseStudy({ slug, onClose, note, authed, onEdit }) {
     );
   }
   return (
-    <div style={{ position: 'fixed', inset: 0, zIndex: 320, background: '#151210', overflowY: 'auto', overscrollBehavior: 'contain' }}>
+    <div className="reader-scroll" style={{ position: 'fixed', inset: 0, zIndex: 320, background: '#151210', overflowY: 'auto', overscrollBehavior: 'contain' }}>
       <div className="reader-body" style={{ maxWidth: 1100, margin: '0 auto', padding: '64px 48px 100px' }}>
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 32 }}>
-          <span onClick={onClose} data-cursor-hover="true" style={{ cursor: 'pointer', fontFamily: "'DM Mono', monospace", fontSize: '0.7rem', letterSpacing: '0.1em', textTransform: 'uppercase', color: '#8C8676' }}>← Back to Quant Lab</span>
+          <span />{/* Back is the floating pill now (ReaderNav) */}
           {authed && <span onClick={onEdit} data-cursor-hover="true" style={{ cursor: 'pointer', fontFamily: "'DM Mono', monospace", fontSize: '0.65rem', letterSpacing: '0.1em', textTransform: 'uppercase', color: '#F5C518' }}>Edit</span>}
         </div>
         <div style={{ display: 'flex', gap: 10, marginBottom: 12 }}>
@@ -406,6 +406,15 @@ function QuantLabSection({ ink = '#0A0A0A', inkFaint = '#8C8C8C', inkMuted = '#4
   const [newChoice, setNewChoice] = useState(false);
   const [simpleEditing, setSimpleEditing] = useState(null);
   useScrollLock(!!(openSlug || editingSlug || simpleEditing));
+  // floating Back / KS / back-to-top controls (see ReaderNav)
+  const reading = !!(openSlug && !editingSlug && !simpleEditing);
+  useEffect(() => {
+    if (!reading) return;
+    document.body.dataset.reader = 'research';
+    const close = () => closeNote();
+    window.addEventListener('reader:close', close);
+    return () => { window.removeEventListener('reader:close', close); delete document.body.dataset.reader; };
+  }, [reading, closeNote]);
   const [simpleForm, setSimpleForm] = useState({ title: '', subtitle: '', summary: '', tags: '', cover_image: '' });
   const simpleBodyRef = useRef(null);
   const simpleFileRef = useRef(null);

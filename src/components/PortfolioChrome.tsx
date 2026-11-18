@@ -7,6 +7,7 @@ import { NAV_LINKS, SITE } from '@/lib/data';
 import { smoothScrollTo } from '@/lib/scroll';
 import Logo from './Logo';
 import CustomCursor from './CustomCursor';
+import ReaderNav, { readerOpen, closeReaderToHero } from './ui/ReaderNav';
 
 // All of these manipulate window/canvas/three.js directly and have no SEO
 // value server-rendered, so they're loaded client-only.
@@ -66,7 +67,7 @@ export default function PortfolioChrome() {
 
       <PetCompanion spriteSrc="/images/astronaut-pet-sprite.png" size={48} />
 
-      <Logo onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })} />
+      <Logo onClick={() => (readerOpen() ? closeReaderToHero() : window.scrollTo({ top: 0, behavior: 'smooth' }))} />
 
       <DynamicInfo
         name={SITE.name}
@@ -93,6 +94,8 @@ export default function PortfolioChrome() {
 
       <SocialShareFAB ink={T.ink} bg={T.bg} itemGap={60} isDark={isDark} />
       <ResumeFAB href={SITE.resumeUrl} filename="Kanishka_Sarkar_Resume-2026.pdf" ink={T.ink} isDark={isDark} />
+
+      <ReaderNav ink={T.ink} isDark={isDark} />
 
       <CustomCursor />
     </>

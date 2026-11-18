@@ -370,24 +370,30 @@ function ExperienceJourney({ entries = [], accent = '#C4962A', bg = '#0A0908', t
       const wrap = wrapRef.current, stage = stageRef.current;
       if (!wrap || !stage) return;
       const rect = wrap.getBoundingClientRect();
-      const vh = window.innerHeight, vw = window.innerWidth;
+      const vh = window.innerHeight;
+      // Span the site frame (see --frame in globals.css), not the whole window,
+      // so the journey stays centred on wide monitors.
+      const pageW = document.documentElement.clientWidth;
+      const frame = parseFloat(getComputedStyle(document.documentElement).getPropertyValue('--frame')) || pageW;
+      const vw = Math.min(window.innerWidth, frame);
+      const frameLeft = Math.max(0, (pageW - vw) / 2);
       const total = wrap.offsetHeight - vh;
       stateRef.current.progress = Math.max(0, Math.min(1, total > 0 ? (-rect.top) / total : 0));
 
       if (rect.top > 0) {
         stage.style.position = 'absolute';
         stage.style.top = '0px';
-        stage.style.left = `${-rect.left}px`;
+        stage.style.left = `${frameLeft - rect.left}px`;
         stage.style.width = `${vw}px`;
       } else if (rect.bottom < vh) {
         stage.style.position = 'absolute';
         stage.style.top = `${Math.max(0, wrap.offsetHeight - vh)}px`;
-        stage.style.left = `${-rect.left}px`;
+        stage.style.left = `${frameLeft - rect.left}px`;
         stage.style.width = `${vw}px`;
       } else {
         stage.style.position = 'fixed';
         stage.style.top = '0px';
-        stage.style.left = '0px';
+        stage.style.left = `${frameLeft}px`;
         stage.style.width = `${vw}px`;
       }
     }

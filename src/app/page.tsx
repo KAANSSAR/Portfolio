@@ -14,7 +14,7 @@ export default function Home() {
   return (
     <ThemeRoot>
       <PortfolioChrome />
-      <div style={{ position: 'relative', zIndex: 1 }}>
+      <div className="site-frame" style={{ position: 'relative', zIndex: 1 }}>
         <Hero />
         <Marquee />
         <About />

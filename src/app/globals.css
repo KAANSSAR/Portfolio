@@ -672,3 +672,61 @@ body[data-fullscreen-overlay='1'] .theme-toggle-wrap {
 }
 .deep-dive-body { animation: expFadeIn 0.35s ease; }
 .deep-dive-toggle:hover { border-color: rgba(245,197,24,0.5) !important; }
+
+/* ---------------------------------------------------------------------------
+   Wide monitors: the page stops growing at --frame and sits centred, with the
+   star background still filling the screen. The fixed buttons and the cube
+   move in by --gutter so they line up with the frame, not the screen edges.
+   Below --frame wide, --gutter is 0 and nothing changes.
+   --------------------------------------------------------------------------- */
+:root {
+  --frame: 1680px;
+  --gutter: max(0px, (100% - var(--frame)) / 2);
+}
+
+.site-frame {
+  max-width: var(--frame);
+  margin-left: auto;
+  margin-right: auto;
+}
+
+@media (min-width: 861px) {
+  .ks-logo { left: calc(var(--gutter) + 30px) !important; }
+  .theme-toggle-btn { right: calc(var(--gutter) + 88px) !important; }
+  .unfold-menu { right: calc(var(--gutter) + 28px) !important; }
+  .fab-share { left: calc(var(--gutter) + 28px) !important; }
+  .cube-halo { left: calc(var(--gutter) + 0.12 * min(100%, var(--frame))) !important; }
+}
+
+/* ---------------------------------------------------------------------------
+   Reader mode (a Writing post or Research note is open, see ReaderNav).
+   The + menu makes way for the back-to-top button, and on the always-dark
+   research page the KS mark stays light in light mode.
+   --------------------------------------------------------------------------- */
+body[data-reader] .unfold-menu {
+  display: none !important;
+}
+
+body[data-reader='research'] .ks-logo div {
+  color: #F2EEE6 !important;
+}
+
+@media (max-width: 860px) {
+  /* Under the KS mark rather than beside it, clear of the notch. */
+  .reader-back {
+    top: 60px !important;
+    left: 12px !important;
+    height: 32px !important;
+  }
+
+  .reader-top {
+    right: 20px !important;
+    bottom: 22px !important;
+    transform-origin: bottom right;
+    scale: 0.85;
+  }
+
+  body[data-reader] .reader-body {
+    padding-top: 6.5rem !important;
+  }
+}
