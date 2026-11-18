@@ -751,6 +751,12 @@ body[data-reader='research'] .ks-logo div {
   }
 }
 
+/* Computers: blur it behind About too (only About). */
+body[data-cube-behind='about'] .cube-halo > div {
+  filter: blur(5px);
+  opacity: 0.45 !important;
+}
+
 /* Phones and upright tablets: the journey camera is raised so the live node sits mid-screen (see
    ExperienceJourney), which left a tall empty band above the first node and
    below the last. Pull the journey up into the heading and let Projects

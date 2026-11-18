@@ -43,11 +43,11 @@ export default function PortfolioChrome() {
       if (!cube) return;
       const c = cube.getBoundingClientRect();
       const cy = c.top + c.height / 2;
-      const behind = BLUR_BEHIND.some((id) => {
+      const behind = BLUR_BEHIND.find((id) => {
         const r = document.getElementById(id)?.getBoundingClientRect();
         return !!r && cy > r.top && cy < r.bottom;
       });
-      if (behind) document.body.dataset.cubeBehind = '1';
+      if (behind) document.body.dataset.cubeBehind = behind;
       else delete document.body.dataset.cubeBehind;
     };
     const onScroll = () => { if (!raf) raf = requestAnimationFrame(check); };
