@@ -732,8 +732,8 @@ body[data-reader='research'] .ks-logo div {
 }
 
 /* ---------------------------------------------------------------------------
-   Phones and tablets: blur the cube's tickers while it sits behind the About
-   text, so the copy stays readable. Desktop with a mouse is unchanged.
+   Phones and tablets: blur the cube's tickers while it sits behind About,
+   Quant Lab or Writing, so the copy stays readable. Desktop with a mouse is unchanged.
    --------------------------------------------------------------------------- */
 .cube-halo > div {
   transition: filter 0.45s ease, opacity 0.45s ease;

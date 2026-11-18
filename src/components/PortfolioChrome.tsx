@@ -22,6 +22,8 @@ const ResumeFAB = dynamic(() => import('./ui/ResumeFAB'), { ssr: false });
 
 const UNFOLD_ITEMS = [...NAV_LINKS].reverse().concat([{ label: 'Home', href: '#hero' }]);
 
+const BLUR_BEHIND = ['about', 'quant-lab', 'blog'];
+
 export default function PortfolioChrome() {
   const { T, isDark, toggleTheme } = useTheme();
   const [roleIndex, setRoleIndex] = React.useState(0);
@@ -31,19 +33,20 @@ export default function PortfolioChrome() {
     return () => clearInterval(id);
   }, []);
 
-  // On phones and tablets the cube floats behind the About text, so blur it
-  // while About is over it (see body[data-cube-behind] in globals.css).
+  // On phones and tablets the cube floats behind the text, so blur it while
+  // one of these sections is over it (see body[data-cube-behind] in globals.css).
   React.useEffect(() => {
     let raf = 0;
     const check = () => {
       raf = 0;
       const cube = document.querySelector('.cube-halo');
-      const about = document.getElementById('about');
-      if (!cube || !about) return;
+      if (!cube) return;
       const c = cube.getBoundingClientRect();
-      const a = about.getBoundingClientRect();
       const cy = c.top + c.height / 2;
-      const behind = cy > a.top && cy < a.bottom;
+      const behind = BLUR_BEHIND.some((id) => {
+        const r = document.getElementById(id)?.getBoundingClientRect();
+        return !!r && cy > r.top && cy < r.bottom;
+      });
       if (behind) document.body.dataset.cubeBehind = '1';
       else delete document.body.dataset.cubeBehind;
     };
